@@ -1,0 +1,34 @@
+openapi: 3.0.3
+info:
+  title: Songify - OpenAPI 3.0
+  description: |-
+    This is an API gives you information about artists, releases and recordings. 
+  contact:
+    email: apiteam@swagger.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 0.0.1
+externalDocs:
+  description: Find out more about Songify
+  url: https://github.com/rmerchanc/songify
+servers:
+- url: https://petstore3.swagger.io/api/v3 # no sé cuál será
+tags:
+- name: artist
+  description: Everything about artists
+  externalDocs:
+    description: Find out more about artists
+    url: https://musicbrainz.org/doc/Artist
+- name: release
+  description: Everything about releases
+  externalDocs:
+    description: Find out more about releases
+    url: https://musicbrainz.org/doc/Release
+- name: recording
+  description: Everything about recordings
+  externalDocs:
+    description: Find out more about recordings
+    url: https://musicbrainz.org/doc/Recording
+components: # definir los esquemas
+paths: # definir las rutas
