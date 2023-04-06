@@ -31,7 +31,7 @@ tags:
     description: Find out more about recordings
     url: https://musicbrainz.org/doc/Recording
 paths:
-  /artists:
+  /artist:
     get: 
       summary: GET all the artists of the API
       description: Retreives all the information of the available artists
@@ -50,7 +50,8 @@ components:
       type: array
       items: 
         $ref: "#/components/schemas/artist"
-      example: [{
+      example: [
+        {
         "id": 1,
         "name": "Coldplay",
         "type": "Group",
@@ -58,7 +59,18 @@ components:
         "begin_date": "1996-09",
         "url_releases": "https://petstore3.swagger.io/api/v3/artist/1/releases",
         "url_recordings": "https://petstore3.swagger.io/api/v3/artist/1/recordings"
-      }] 
+        }, 
+        {
+        "id": 2,
+        "name": "John Williams",
+        "type": "Person",
+        "gender": "Male",
+        "area": "Australia",
+        "begin_date": "1941-04-24",
+        "url_releases": "https://petstore3.swagger.io/api/v3/artist/2/releases",
+        "url_recordings": "https://petstore3.swagger.io/api/v3/artist/2/recordings"
+        }
+      ] 
     artist: 
       type: object
       properties: 
