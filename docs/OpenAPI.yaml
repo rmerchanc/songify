@@ -30,5 +30,70 @@ tags:
   externalDocs:
     description: Find out more about recordings
     url: https://musicbrainz.org/doc/Recording
-components: # definir los esquemas
-paths: # definir las rutas
+paths:
+  /artist:
+    get: 
+      summary: GET all the artists of the API
+      description: Retreives all the information of the available artists
+      responses: 
+        '200': 
+          description: All the information of the artists was successfully retreived
+          content:
+            'application/json':
+              schema: 
+                $ref: "#/components/schemas/artists"
+components:
+  schemas: 
+    artists: 
+      type: array
+      items: 
+        $ref: "#/components/schemas/artist"
+      example: 
+    artist: 
+      type: object
+      properties: 
+        id: 
+          type: integer
+          minimum: 1
+          description: Unique identifier for an artist
+        name: 
+          type: string
+          description: Official name of the artist, it could be a person or a band
+        type: 
+          type: string
+          enum: ["Person", "Group", "Orchestra", "Choir"]
+          description: Type which indicates whether an artist is a person, a group, or something else.
+        gender: 
+          type: string
+          enum: ["Male", "Female", "Neither", null]
+          description: Gender states wehther a person or character identifies as a male, female or neither. Groups do not have genders. 
+        area: 
+          type: string
+          description: Area with which an artist is identified with. Mostly, it is birth/formation country. 
+        begin_date: 
+          type: string
+          format: date
+          description: Begin date represents the date of birth or the group formation
+        end_date: 
+          type: string
+          format: date
+          description: End date represents the date of death or the group last dissolution
+        url_releases: 
+          type: string
+          format: uri
+          description: URI to the releases of this artist
+        url_recordings: 
+          type: string
+          format: uri
+          description: URI to the recordings of this artist
+      required: 
+        - id
+        - name
+        - type
+        - gender
+        - area
+        - begin_date
+        - end_date
+        - url_releases
+        - url_recordings
+      additionalProperties: false
