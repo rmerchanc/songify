@@ -31,7 +31,7 @@ tags:
     description: Find out more about recordings
     url: https://musicbrainz.org/doc/Recording
 paths:
-  /artist:
+  /artists:
     get: 
       summary: GET all the artists of the API
       description: Retreives all the information of the available artists
@@ -42,13 +42,23 @@ paths:
             'application/json':
               schema: 
                 $ref: "#/components/schemas/artists"
+        '500':
+          description: The server encountered an unexpected condition that prevented it from fulfilling the request
 components:
   schemas: 
     artists: 
       type: array
       items: 
         $ref: "#/components/schemas/artist"
-      example: 
+      example: [{
+        "id": 1,
+        "name": "Coldplay",
+        "type": "Group",
+        "area": "United Kingdom",
+        "begin_date": "1996-09",
+        "url_releases": "https://petstore3.swagger.io/api/v3/artist/1/releases",
+        "url_recordings": "https://petstore3.swagger.io/api/v3/artist/1/recordings"
+      }] 
     artist: 
       type: object
       properties: 
@@ -65,7 +75,7 @@ components:
           description: Type which indicates whether an artist is a person, a group, or something else.
         gender: 
           type: string
-          enum: ["Male", "Female", "Neither", null]
+          enum: ["Male", "Female", "Neither"]
           description: Gender states wehther a person or character identifies as a male, female or neither. Groups do not have genders. 
         area: 
           type: string
@@ -90,10 +100,17 @@ components:
         - id
         - name
         - type
-        - gender
         - area
         - begin_date
-        - end_date
         - url_releases
         - url_recordings
       additionalProperties: false
+      example: {
+        "id": 1,
+        "name": "Coldplay",
+        "type": "Group",
+        "area": "United Kingdom",
+        "begin_date": "1996-09",
+        "url_releases": "https://petstore3.swagger.io/api/v3/artist/1/releases",
+        "url_recordings": "https://petstore3.swagger.io/api/v3/artist/1/recordings"
+      }
