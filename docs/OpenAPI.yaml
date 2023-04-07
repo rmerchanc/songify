@@ -44,6 +44,19 @@ paths:
                 $ref: "#/components/schemas/artists"
         '500':
           description: The server encountered an unexpected condition that prevented it from fulfilling the request
+  /artist/release:
+    get:
+      summary: GET all the releases from a specific artist of the API
+      description: Retreives all the information of the available releases from an artist
+      responses: 
+        '200': 
+          description: All the information of the releases from this artist was successfully retreived
+          content:
+            'application/json':
+              schema: 
+                $ref: "#/components/schemas/artists_release"
+        '500':
+          description: The server encountered an unexpected condition that prevented it from fulfilling the request
 components:
   schemas: 
     artists: 
@@ -126,3 +139,77 @@ components:
         "url_releases": "https://petstore3.swagger.io/api/v3/artist/1/releases",
         "url_recordings": "https://petstore3.swagger.io/api/v3/artist/1/recordings"
       }
+    artists_release:
+      type: array
+      items: 
+        $ref: "#/components/schemas/artist_release"
+      example: [
+        {
+        "id": 1,
+        "title": "Parachutes",
+        "artist": "Coldplay",
+        "date": "2000-07-10",
+        "country": "United Kingdom",
+        "label": "Parlophone",
+        "language": "en",
+        "url_recordings": "https://petstore3.swagger.io/api/v3/artist/1/release/1/recordings"
+        }, 
+        {
+        "id": 2,
+        "title": "A rush of blood to the head",
+        "artist": "Coldplay",
+        "date": "2002-08-26",
+        "country": "United Kingdom",
+        "label": "Parlophone",
+        "language": "en",
+        "url_recordings": "https://petstore3.swagger.io/api/v3/artist/1/release/2/recordings"
+        }
+      ] 
+    artist_release:
+      type: object
+      properties: 
+        id: 
+          type: integer
+          minimum: 1
+          description: Unique identifier for an artist's release
+        title: 
+          type: string
+          description: Official name of the release
+        artist: 
+          type: string
+          description: Official name of the artist, it could be a person or a band
+        date: 
+          type: string
+          format: date
+          description: Official date of the artist's release 
+        country: 
+          type: string
+          description: Country of the artist's release. Mostly, it is birth/formation country. 
+        language: 
+          type: string
+          description: Official language of the artist's release
+        url_recordings: 
+          type: string
+          format: uri
+          description: URI to the recordings of this release
+      required:
+        - id
+        - title
+        - artist
+        - date
+        - country
+        - language
+        - url_recordings
+      additionalProperties: false
+      example: [
+        {
+        "id": 1,
+        "title": "Parachutes",
+        "artist": "Coldplay",
+        "date": "2000-07-10",
+        "country": "United Kingdom",
+        "label": "Parlophone",
+        "language": "en",
+        "url_recordings": "https://petstore3.swagger.io/api/v3/artist/1/release/1/recordings"
+        }
+      ]
