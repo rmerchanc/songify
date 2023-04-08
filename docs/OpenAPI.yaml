@@ -80,6 +80,99 @@ paths:
                 $ref: '#/components/schemas/error'
         '500':
           description: The server encountered an unexpected condition that prevented it from fulfilling the request
+  /artist/{id}:
+    parameters: 
+      - $ref: "#/components/parameters/id"
+    get:
+      summary: GET one artist of the API
+      description: Retreives all the information of the specified artist
+      responses: 
+        '200': 
+          description: All the information of the artist was successfully retreived
+          content:
+            'application/json':
+              schema: 
+                $ref: "#/components/schemas/artist"
+        '404':
+          description: There is no artist with that identifier
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error"
+        '500':
+          description: The server encountered an unexpected condition that prevented it from fulfilling the request
+    put:
+      summary: PUT one artist of the API
+      description: Updates all or part of the information of the specified artist
+      requestBody:
+        required: true
+        content: 
+          'application/json':
+              schema: 
+                $ref: "#/components/schemas/artist_update"
+      responses: 
+        '200': 
+          description: All the information provided was successfully updated for the artist
+          content:
+            'application/json':
+              schema: 
+                $ref: "#/components/schemas/new_element"
+        '400':
+          description: Bad request performed by the client due to invalid parameters
+          content: 
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Unauthorized request due to missing credentials 
+          content: 
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/error' 
+        '403':
+          description: Fordibben access due to permanent restrictions
+          content: 
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/error'
+        '404':
+          description: There is no artist with that identifier
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error"
+        '500':
+          description: The server encountered an unexpected condition that prevented it from fulfilling the request
+    delete:
+      summary: DELETE one artist of the API
+      description: Deletes all the information of the specified artist
+      responses: 
+        '200': 
+          description: All the information provided was successfully updated for the artist
+          content:
+            'application/json':
+              schema: 
+                $ref: "#/components/schemas/new_element"
+        '401':
+          description: Unauthorized request due to missing credentials 
+          content: 
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/error' 
+        '403':
+          description: Fordibben access due to permanent restrictions
+          content: 
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/error'
+        '404':
+          description: There is no artist with that identifier
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error"
+        '500':
+          description: The server encountered an unexpected condition that prevented it from fulfilling the request    
   /artist/release:
     get:
       summary: GET all the releases from a specific artist of the API
@@ -94,6 +187,14 @@ paths:
         '500':
           description: The server encountered an unexpected condition that prevented it from fulfilling the request
 components:
+  parameters: 
+    id: 
+      description: Unique identifier for an element
+      name: id
+      in: path
+      required: true
+      schema:
+        $ref: "#/components/schemas/id"
   schemas: 
     id: 
       type: integer
@@ -123,8 +224,8 @@ components:
         "url_releases": "https://petstore3.swagger.io/api/v3/artist/2/releases",
         "url_recordings": "https://petstore3.swagger.io/api/v3/artist/2/recordings"
         }
-      ] 
-    artist: 
+      ]
+    artist_update:
       type: object
       properties: 
         id: 
@@ -159,6 +260,11 @@ components:
           type: string
           format: uri
           description: URI to the recordings of this artist
+      additionalProperties: false
+      example: {
+        "type": "Choir"
+      }
+    artist: 
       required: 
         - id
         - name
@@ -167,7 +273,7 @@ components:
         - begin_date
         - url_releases
         - url_recordings
-      additionalProperties: false
+      $ref: "#/components/schemas/artist_update"
       example: {
         "id": 1,
         "name": "Coldplay",
@@ -269,12 +375,13 @@ components:
       properties:
         error:
           type: string
-          enum: ["Bad request", "Unauthorized", "Fordibben"]
+          enum: ["Bad request", "Unauthorized", "Fordibben", "Not Found"]
         mensaje: 
           type: string
           enum: ["Bad request performed by the client due to invalid parameters", 
                  "Unauthorized request due to missing credentials", 
-                 "Fordibben access due to permanent restrictions"]
+                 "Fordibben access due to permanent restrictions",
+                 "The resource was not found"]
       required:
       - error
       - mensaje
