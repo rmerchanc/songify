@@ -1,96 +1,107 @@
 openapi: 3.0.3
 info:
   title: Songify - OpenAPI 3.0
-  description: |-
-    This is an API gives you information about artists, releases and recordings. 
-  contact:
-    email: apiteam@swagger.io
+  version: 0.0.1
+  description: This is an API that allows you to do CRUD operations on artists, releases and recordings. 
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
-  version: 0.0.1
+servers:
+  - url: https://localhost/api/v3 # de momento el servidor es local
 externalDocs:
   description: Find out more about Songify
   url: https://github.com/rmerchanc/songify
-servers:
-- url: https://petstore3.swagger.io/api/v3 # no sé cuál será
 tags:
-- name: artist
-  description: Everything about artists
-  externalDocs:
-    description: Find out more about artists
-    url: https://musicbrainz.org/doc/Artist
-- name: release
-  description: Everything about releases
-  externalDocs:
-    description: Find out more about releases
-    url: https://musicbrainz.org/doc/Release
-- name: recording
-  description: Everything about recordings
-  externalDocs:
-    description: Find out more about recordings
-    url: https://musicbrainz.org/doc/Recording
+  - name: artist
+    description: Everything about artists
+    externalDocs:
+      description: Find out more about artists
+      url: https://musicbrainz.org/doc/Artist
+  - name: release
+    description: Everything about releases
+    externalDocs:
+      description: Find out more about releases
+      url: https://musicbrainz.org/doc/Release
+  - name: recording
+    description: Everything about recordings
+    externalDocs:
+      description: Find out more about recordings
+      url: https://musicbrainz.org/doc/Recording
 paths:
   /artist:
     get: 
+      tags: 
+        - artist
       summary: GET all the artists of the API
       description: Retreives all the information of the available artists
       responses: 
         '200': 
           description: All the information of the artists was successfully retreived
           content:
-            'application/json':
+            application/json:
               schema: 
                 $ref: "#/components/schemas/artists"
         '500':
           description: The server encountered an unexpected condition that prevented it from fulfilling the request
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
     post:
+      tags: 
+        - artist
       summary: POST a new artist 
-      description: Registers a new artist based on the information provided by the user
+      description: Creates a new artist based on the information provided by the user
       requestBody:
         required: true
         content: 
-          'application/json':
+          application/json:
             schema: 
               $ref: "#/components/schemas/artist"
       responses: 
         '201': 
           description: Created a new artist successfully based on the information provided
           content:
-            'application/json':
+            application/json:
               schema: 
                 $ref: "#/components/schemas/new_element"
         '400':
           description: Bad request performed by the client due to invalid parameters
           content: 
-            'application/json':
+            application/json:
               schema:
                 $ref: '#/components/schemas/error'
         '401':
           description: Unauthorized request due to missing credentials 
           content: 
-            'application/json':
+            application/json:
               schema:
                 $ref: '#/components/schemas/error' 
         '403':
           description: Fordibben access due to permanent restrictions
           content: 
-            'application/json':
+            application/json:
               schema:
                 $ref: '#/components/schemas/error'
         '500':
           description: The server encountered an unexpected condition that prevented it from fulfilling the request
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
   /artist/{id}:
     parameters: 
       - $ref: "#/components/parameters/id"
     get:
+      tags: 
+        - artist
       summary: GET one artist of the API
       description: Retreives all the information of the specified artist
       responses: 
         '200': 
-          description: All the information of the artist was successfully retreived
+          description: All the information of the specified artist was successfully retreived
           content:
-            'application/json':
+            application/json:
               schema: 
                 $ref: "#/components/schemas/artist"
         '404':
@@ -101,38 +112,44 @@ paths:
                 $ref: "#/components/schemas/error"
         '500':
           description: The server encountered an unexpected condition that prevented it from fulfilling the request
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
     put:
+      tags: 
+        - artist
       summary: PUT one artist of the API
       description: Updates all or part of the information of the specified artist
       requestBody:
         required: true
         content: 
-          'application/json':
+          application/json:
               schema: 
                 $ref: "#/components/schemas/artist_update"
       responses: 
         '200': 
-          description: All the information provided was successfully updated for the artist
+          description: All the information provided was successfully updated for the specified artist
           content:
-            'application/json':
+            application/json:
               schema: 
                 $ref: "#/components/schemas/new_element"
         '400':
           description: Bad request performed by the client due to invalid parameters
           content: 
-            'application/json':
+            application/json:
               schema:
                 $ref: '#/components/schemas/error'
         '401':
           description: Unauthorized request due to missing credentials 
           content: 
-            'application/json':
+            application/json:
               schema:
                 $ref: '#/components/schemas/error' 
         '403':
           description: Fordibben access due to permanent restrictions
           content: 
-            'application/json':
+            application/json:
               schema:
                 $ref: '#/components/schemas/error'
         '404':
@@ -143,26 +160,32 @@ paths:
                 $ref: "#/components/schemas/error"
         '500':
           description: The server encountered an unexpected condition that prevented it from fulfilling the request
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
     delete:
+      tags: 
+        - artist
       summary: DELETE one artist of the API
       description: Deletes all the information of the specified artist
       responses: 
         '200': 
           description: All the information provided was successfully updated for the artist
           content:
-            'application/json':
+            application/json:
               schema: 
                 $ref: "#/components/schemas/new_element"
         '401':
           description: Unauthorized request due to missing credentials 
           content: 
-            'application/json':
+            application/json:
               schema:
                 $ref: '#/components/schemas/error' 
         '403':
           description: Fordibben access due to permanent restrictions
           content: 
-            'application/json':
+            application/json:
               schema:
                 $ref: '#/components/schemas/error'
         '404':
@@ -172,24 +195,32 @@ paths:
               schema:
                 $ref: "#/components/schemas/error"
         '500':
-          description: The server encountered an unexpected condition that prevented it from fulfilling the request    
-  /artist/release:
+          description: The server encountered an unexpected condition that prevented it from fulfilling the request
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'    
+  /artist/{id}/release:
     get:
       summary: GET all the releases from a specific artist of the API
       description: Retreives all the information of the available releases from an artist
       responses: 
         '200': 
-          description: All the information of the releases from this artist was successfully retreived
+          description: All the information of the releases from the specified artist was successfully retreived
           content:
-            'application/json':
+            application/json:
               schema: 
-                $ref: "#/components/schemas/artists_release" 
+                $ref: "#/components/schemas/releases" 
         '500':
           description: The server encountered an unexpected condition that prevented it from fulfilling the request
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
 components:
   parameters: 
     id: 
-      description: Unique identifier for an element
+      description: Unique identifier for a resource
       name: id
       in: path
       required: true
@@ -199,7 +230,7 @@ components:
     id: 
       type: integer
       minimum: 1
-      description: Unique identifier for an artist
+      example: 1
     artists: 
       type: array
       items: 
@@ -211,8 +242,8 @@ components:
         "type": "Group",
         "area": "United Kingdom",
         "begin_date": "1996-09",
-        "url_releases": "https://petstore3.swagger.io/api/v3/artist/1/releases",
-        "url_recordings": "https://petstore3.swagger.io/api/v3/artist/1/recordings"
+        "url_releases": "https://localhost/api/v3/artist/1/releases",
+        "url_recordings": "https://localhost/api/v3/artist/1/recordings"
         }, 
         {
         "id": 2,
@@ -221,8 +252,8 @@ components:
         "gender": "Male",
         "area": "Australia",
         "begin_date": "1941-04-24",
-        "url_releases": "https://petstore3.swagger.io/api/v3/artist/2/releases",
-        "url_recordings": "https://petstore3.swagger.io/api/v3/artist/2/recordings"
+        "url_releases": "https://localhost/api/v3/artist/2/releases",
+        "url_recordings": "https://localhost/api/v3/artist/2/recordings"
         }
       ]
     artist_update:
@@ -236,11 +267,11 @@ components:
         type: 
           type: string
           enum: ["Person", "Group", "Orchestra", "Choir"]
-          description: Type which indicates whether an artist is a person, a group, or something else.
+          description: Type which indicates whether an artist is a person, a group or something else.
         gender: 
           type: string
           enum: ["Male", "Female", "Neither"]
-          description: Gender states wehther a person or character identifies as a male, female or neither. Groups do not have genders. 
+          description: Gender states whether a person or character identifies as a male, female or neither. Groups do not have genders. 
         area: 
           type: string
           description: Area with which an artist is identified with. Mostly, it is birth/formation country. 
@@ -280,13 +311,13 @@ components:
         "type": "Group",
         "area": "United Kingdom",
         "begin_date": "1996-09",
-        "url_releases": "https://petstore3.swagger.io/api/v3/artist/1/releases",
-        "url_recordings": "https://petstore3.swagger.io/api/v3/artist/1/recordings"
+        "url_releases": "https://localhost/api/v3/artist/1/releases",
+        "url_recordings": "https://localhost/api/v3/artist/1/recordings"
       }
-    artists_release:
+    releases:
       type: array
       items: 
-        $ref: "#/components/schemas/artist_release"
+        $ref: "#/components/schemas/release"
       example: [
         {
         "id": 1,
@@ -294,9 +325,9 @@ components:
         "artist": "Coldplay",
         "date": "2000-07-10",
         "country": "United Kingdom",
-        "label": "Parlophone",
+        "label": "Parlophone",  # label no está definida en el schema
         "language": "en",
-        "url_recordings": "https://petstore3.swagger.io/api/v3/artist/1/release/1/recordings"
+        "url_recordings": https://localhost/api/v3/artist/1/release/1/recordings"
         }, 
         {
         "id": 2,
@@ -306,27 +337,25 @@ components:
         "country": "United Kingdom",
         "label": "Parlophone",
         "language": "en",
-        "url_recordings": "https://petstore3.swagger.io/api/v3/artist/1/release/2/recordings"
+        "url_recordings": "https://localhost/api/v3/artist/1/release/2/recordings"
         }
       ] 
-    artist_release:
+    release: # esto debería cambiar, ajustarlo para release_update y release
       type: object
       properties: 
         id: 
-          type: integer
-          minimum: 1
-          description: Unique identifier for an artist's release
+          $ref: "#/components/schemas/id" 
         title: 
           type: string
           description: Official name of the release
-        artist: 
+        artist: # tiene más sentido si es un array, para indicar las posibles colaboraciones, ya que se sabe por la ruta de qué artista es
           type: string
           description: Official name of the artist, it could be a person or a band
         date: 
           type: string
           format: date
           description: Official date of the artist's release 
-        country: 
+        country: # esta info está en el artista también
           type: string
           description: Country of the artist's release. Mostly, it is birth/formation country. 
         language: 
@@ -354,7 +383,7 @@ components:
         "country": "United Kingdom",
         "label": "Parlophone",
         "language": "en",
-        "url_recordings": "https://petstore3.swagger.io/api/v3/artist/1/release/1/recordings"
+        "url_recordings": "https://localhost/api/v3/artist/1/release/1/recordings"
         }
       ]
     new_element:
@@ -368,20 +397,21 @@ components:
           format: uri
       example: {
         "id": 1,
-        "url": "https://petstore3.swagger.io/api/v3/artist/1"
+        "url": "https://localhost/api/v3/artist/1"
       }
     error:
       type: object
       properties:
         error:
           type: string
-          enum: ["Bad request", "Unauthorized", "Fordibben", "Not Found"]
+          enum: ["Bad request", "Unauthorized", "Fordibben", "Not Found", "Internal Server Error"]
         mensaje: 
           type: string
           enum: ["Bad request performed by the client due to invalid parameters", 
                  "Unauthorized request due to missing credentials", 
                  "Fordibben access due to permanent restrictions",
-                 "The resource was not found"]
+                 "The specified resource was not found", 
+                 "The server encountered an unexpected condition that prevented it from fulfilling the request"]
       required:
       - error
       - mensaje
