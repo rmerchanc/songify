@@ -172,10 +172,6 @@ paths:
       responses: 
         '200': 
           description: All the information provided was successfully updated for the artist
-          content:
-            application/json:
-              schema: 
-                $ref: "#/components/schemas/new_element"
         '401':
           description: Unauthorized request due to missing credentials 
           content: 
