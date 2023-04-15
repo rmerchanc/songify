@@ -213,6 +213,123 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/error'
+  
+  
+  /artist/{id}/recodings:
+    get:
+      parameters: 
+        - $ref: "#/components/parameters/id"
+      tags:
+        - artist
+      summary: GET all the recordings of the API
+      description: Retreives all the information of the available recordings
+      responses:
+        "200":
+          description: All the information of the recordings was successfully retreived
+          content:
+              application/json:
+                schema: 
+                  $ref: '#/components/schemas/recordings'
+        "500":
+          description: The server encountered an unexpected condition that prevented it from fulfilling the request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error"
+    post:
+      parameters:
+        - $ref: "#/components/parameters/id"
+      tags:
+        - artist
+      summary: POST a new recording 
+      description: Creates a new recording based on the information provided by the user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/recording"
+      responses:
+        "201":
+          description: Created a new recording successfully based on the information provided
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/new_element"
+        "4XX":
+          description: The provided parameters are incorrect
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error"
+        '500':
+          description: The server encountered an unexpected condition that prevented it from fulfilling the request
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'  
+    
+  /artist/{id}/recodings/{id}:
+    parameters:
+      - $ref: "#/components/parameters/id"
+    get:
+      tags: 
+        - artist
+      summary: GET all the recordings from a specific artist of the API
+      description: Retreives all the information of the available recordings from an artist
+      responses:
+        "200":
+          description: All the information of the recordings from the specified artist was successfully retreived
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/recordings'
+        '500':
+          description: The server encountered an unexpected condition that prevented it from fulfilling the request
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+    put:
+      tags:
+        - artist
+      summary: PUT one the recordings from a specific artist of the API
+      description: Updates all or part of the information of the specified recording
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/artist_update"
+      responses:
+        "200":
+          description: All the information provided was successfully updated for the specified recording
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/new_element"
+        "4XX":
+          description: The provided parameters are incorrect
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error"
+    delete: 
+      tags:
+        - artist
+      summary: DELETE one recording of the API
+      description: Deletes all the information of the specified recording
+      responses: 
+        '200': 
+          description: All the information provided was successfully updated for the recording
+        '4XX':
+          description: The provided parameters are incorrect 
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+                
+                
 components:
   parameters: 
     id: 
@@ -382,6 +499,54 @@ components:
         "url_recordings": "https://localhost/api/v3/artist/1/release/1/recordings"
         }
       ]
+      
+      
+    recordings:
+      type: array 
+      items:
+        $ref: "#/components/schemas/recording"
+      example: [{
+        "id": 1,
+        "title": "[Mamma Mia] Dancing Queen",
+        "length": "4:00",
+        "artist": "ABBA",
+        },{
+        "id": 2,
+        "title": "Into the Blue",
+        "length": "5:34",
+        "artist": "Moby",
+        }]
+
+    recording_update:
+      type: object
+      properties: 
+        id:
+          $ref: "#/components/schemas/id" 
+        title:
+          type: string
+          description: The title of the recording
+        length:
+          type: string
+          description: The length of the recording
+        artist:
+          type: string
+          description: Artista de la canción 
+
+                   
+    recording:
+      required:
+        - id
+        - title
+        - length
+        - artist
+      $ref: '#/components/schemas/recording_update'
+      example: {
+        "id": 1,
+        "title": "[Mamma Mia] Dancing Queen",
+        "length": "4:00",
+        "artist": "	ABBA",
+        }
+      
     new_element:
       type: object
       properties:
