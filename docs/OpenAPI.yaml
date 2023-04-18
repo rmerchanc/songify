@@ -196,6 +196,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/error'    
+
   /artist/{id}/release:
     parameters: 
       - $ref: "#/components/parameters/id"
@@ -209,6 +210,156 @@ paths:
             application/json:
               schema: 
                 $ref: "#/components/schemas/releases" 
+        '500':
+          description: The server encountered an unexpected condition that prevented it from fulfilling the request
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+    post:
+      tags: 
+        - release
+      summary: POST a new release from an artist 
+      description: Creates a new release from an artist based on the information provided by the user
+      requestBody:
+        required: true
+        content: 
+          application/json:
+            schema: 
+              $ref: "#/components/schemas/release"
+      responses: 
+        '201': 
+          description: Created a new artist successfully based on the information provided
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/new_element"
+        '400':
+          description: Bad request performed by the client due to invalid parameters
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Unauthorized request due to missing credentials 
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error' 
+        '403':
+          description: Fordibben access due to permanent restrictions
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '500':
+          description: The server encountered an unexpected condition that prevented it from fulfilling the request
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+
+  /artist/{id}/release/{id}:
+    parameters: 
+      - $ref: "#/components/parameters/id"
+    get:
+      tags: 
+        - release
+      summary: GET one artist of the API
+      description: Retreives all the information of the specified artist
+      responses: 
+        '200': 
+          description: All the information of the specified artist was successfully retreived
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/release"
+        '404':
+          description: There is no artist with that identifier
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error"
+        '500':
+          description: The server encountered an unexpected condition that prevented it from fulfilling the request
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+    put:
+      tags: 
+        - release
+      summary: PUT one artist of the API
+      description: Updates all or part of the information of the specified artist
+      requestBody:
+        required: true
+        content: 
+          application/json:
+              schema: 
+                $ref: "#/components/schemas/release_update"
+      responses: 
+        '200': 
+          description: All the information provided was successfully updated for the specified artist
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/new_element"
+        '400':
+          description: Bad request performed by the client due to invalid parameters
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Unauthorized request due to missing credentials 
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error' 
+        '403':
+          description: Fordibben access due to permanent restrictions
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '404':
+          description: There is no artist with that identifier
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error"
+        '500':
+          description: The server encountered an unexpected condition that prevented it from fulfilling the request
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+    delete:
+      tags: 
+        - release
+      summary: DELETE one release from an artist of the API
+      description: Deletes all the information of the specified release of the artist
+      responses: 
+        '200': 
+          description: All the information provided was successfully deleted for the artist
+        '401':
+          description: Unauthorized request due to missing credentials 
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error' 
+        '403':
+          description: Fordibben access due to permanent restrictions
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '404':
+          description: There is no artist with that identifier
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error"
         '500':
           description: The server encountered an unexpected condition that prevented it from fulfilling the request
           content: 
@@ -475,6 +626,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/error'  
+
   /artist/{id}/release/{id}/recording/{id}:
     parameters:
       - $ref: "#/components/parameters/id"
@@ -705,7 +857,7 @@ components:
         "url_recording": "https://localhost/api/v3/artist/1/release/2/recording"
         }
       ] 
-    release: # esto debería cambiar, ajustarlo para release_update y release
+    release_update: # esto debería cambiar, ajustarlo para release_update y release
       type: object
       properties: 
         id: 
@@ -730,6 +882,7 @@ components:
           type: string
           format: uri
           description: URI to the recordings of this release
+    release:
       required:
         - id
         - title
