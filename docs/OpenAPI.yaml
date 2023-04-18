@@ -171,7 +171,7 @@ paths:
       description: Deletes all the information of the specified artist
       responses: 
         '200': 
-          description: All the information provided was successfully updated for the artist
+          description: All the information provided was successfully deleted for the artist
         '401':
           description: Unauthorized request due to missing credentials 
           content: 
@@ -215,14 +215,14 @@ paths:
                 $ref: '#/components/schemas/error'
   
   
-  /artist/{id}/recodings:
+  /artist/{id}/recording:
+    parameters: 
+      - $ref: "#/components/parameters/id"
     get:
-      parameters: 
-        - $ref: "#/components/parameters/id"
       tags:
-        - artist
-      summary: GET all the recordings of the API
-      description: Retreives all the information of the available recordings
+        - recording
+      summary: GET all the recordings of one artist of the API 
+      description: Retreives all the information of the available recordings of an artist
       responses:
         "200":
           description: All the information of the recordings was successfully retreived
@@ -230,6 +230,12 @@ paths:
               application/json:
                 schema: 
                   $ref: '#/components/schemas/recordings'
+        '404':
+          description: There is no artist with that identifier
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error"
         "500":
           description: The server encountered an unexpected condition that prevented it from fulfilling the request
           content:
@@ -237,12 +243,10 @@ paths:
               schema:
                 $ref: "#/components/schemas/error"
     post:
-      parameters:
-        - $ref: "#/components/parameters/id"
       tags:
-        - artist
-      summary: POST a new recording 
-      description: Creates a new recording based on the information provided by the user
+        - recording
+      summary: POST a new recording of an artist
+      description: Creates a new recording of an artist based on the information provided by the user
       requestBody:
         required: true
         content:
@@ -256,12 +260,24 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/new_element"
-        "4XX":
-          description: The provided parameters are incorrect
-          content:
+        '400':
+          description: Bad request performed by the client due to invalid parameters
+          content: 
             application/json:
               schema:
-                $ref: "#/components/schemas/error"
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Unauthorized request due to missing credentials 
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error' 
+        '403':
+          description: Fordibben access due to permanent restrictions
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
         '500':
           description: The server encountered an unexpected condition that prevented it from fulfilling the request
           content: 
@@ -269,21 +285,27 @@ paths:
               schema:
                 $ref: '#/components/schemas/error'  
     
-  /artist/{id}/recodings/{id}:
+  /artist/{id}/recoding/{id}:
     parameters:
       - $ref: "#/components/parameters/id"
     get:
       tags: 
-        - artist
-      summary: GET all the recordings from a specific artist of the API
-      description: Retreives all the information of the available recordings from an artist
+        - recording
+      summary: GET a recording from a specific artist of the API
+      description: Retreives all the information of one recording from an artist
       responses:
         "200":
-          description: All the information of the recordings from the specified artist was successfully retreived
+          description: All the information of a recording from the specified artist was successfully retreived
           content:
             application/json:
               schema: 
-                $ref: '#/components/schemas/recordings'
+                $ref: '#/components/schemas/recording'
+        '404':
+          description: There is no artist / recording with that identifier
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error"
         '500':
           description: The server encountered an unexpected condition that prevented it from fulfilling the request
           content: 
@@ -292,15 +314,15 @@ paths:
                 $ref: '#/components/schemas/error'
     put:
       tags:
-        - artist
-      summary: PUT one the recordings from a specific artist of the API
+        - recording
+      summary: PUT one recording from a specific artist of the API
       description: Updates all or part of the information of the specified recording
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/artist_update"
+              $ref: "#/components/schemas/recording_update"
       responses:
         "200":
           description: All the information provided was successfully updated for the specified recording
@@ -308,27 +330,68 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/new_element"
-        "4XX":
-          description: The provided parameters are incorrect
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/error"
-    delete: 
-      tags:
-        - artist
-      summary: DELETE one recording of the API
-      description: Deletes all the information of the specified recording
-      responses: 
-        '200': 
-          description: All the information provided was successfully updated for the recording
-        '4XX':
-          description: The provided parameters are incorrect 
+        '400':
+          description: Bad request performed by the client due to invalid parameters
           content: 
             application/json:
               schema:
                 $ref: '#/components/schemas/error'
-                
+        '401':
+          description: Unauthorized request due to missing credentials 
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error' 
+        '403':
+          description: Fordibben access due to permanent restrictions
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '404':
+          description: There is no artist / recording with that identifier
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error"
+        '500':
+          description: The server encountered an unexpected condition that prevented it from fulfilling the request
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+    delete: 
+      tags:
+        - recording
+      summary: DELETE one recording of an artist of the API
+      description: Deletes all the information of the specified recording of an artist
+      responses: 
+        '200': 
+          description: All the information provided was successfully deleted for the recording
+        '401':
+          description: Unauthorized request due to missing credentials 
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error' 
+        '403':
+          description: Fordibben access due to permanent restrictions
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '404':
+          description: There is no artist / recording with that identifier
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error"
+        '500':
+          description: The server encountered an unexpected condition that prevented it from fulfilling the request
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
                 
 components:
   parameters: 
@@ -355,8 +418,8 @@ components:
         "type": "Group",
         "area": "United Kingdom",
         "begin_date": "1996-09",
-        "url_releases": "https://localhost/api/v3/artist/1/releases",
-        "url_recordings": "https://localhost/api/v3/artist/1/recordings"
+        "url_releases": "https://localhost/api/v3/artist/1/release",
+        "url_recordings": "https://localhost/api/v3/artist/1/recording"
         }, 
         {
         "id": 2,
@@ -365,8 +428,8 @@ components:
         "gender": "Male",
         "area": "Australia",
         "begin_date": "1941-04-24",
-        "url_releases": "https://localhost/api/v3/artist/2/releases",
-        "url_recordings": "https://localhost/api/v3/artist/2/recordings"
+        "url_releases": "https://localhost/api/v3/artist/2/release",
+        "url_recordings": "https://localhost/api/v3/artist/2/recording"
         }
       ]
     artist_update:
@@ -424,8 +487,8 @@ components:
         "type": "Group",
         "area": "United Kingdom",
         "begin_date": "1996-09",
-        "url_releases": "https://localhost/api/v3/artist/1/releases",
-        "url_recordings": "https://localhost/api/v3/artist/1/recordings"
+        "url_releases": "https://localhost/api/v3/artist/1/release",
+        "url_recordings": "https://localhost/api/v3/artist/1/recording"
       }
     releases:
       type: array
@@ -440,7 +503,7 @@ components:
         "country": "United Kingdom",
         "label": "Parlophone",  # label no está definida en el schema
         "language": "en",
-        "url_recordings": https://localhost/api/v3/artist/1/release/1/recordings"
+        "url_recordings": https://localhost/api/v3/artist/1/release/1/recording"
         }, 
         {
         "id": 2,
@@ -450,7 +513,7 @@ components:
         "country": "United Kingdom",
         "label": "Parlophone",
         "language": "en",
-        "url_recordings": "https://localhost/api/v3/artist/1/release/2/recordings"
+        "url_recordings": "https://localhost/api/v3/artist/1/release/2/recording"
         }
       ] 
     release: # esto debería cambiar, ajustarlo para release_update y release
@@ -496,11 +559,9 @@ components:
         "country": "United Kingdom",
         "label": "Parlophone",
         "language": "en",
-        "url_recordings": "https://localhost/api/v3/artist/1/release/1/recordings"
+        "url_recordings": "https://localhost/api/v3/artist/1/release/1/recording"
         }
       ]
-      
-      
     recordings:
       type: array 
       items:
@@ -516,7 +577,6 @@ components:
         "length": "5:34",
         "artist": "Moby",
         }]
-
     recording_update:
       type: object
       properties: 
@@ -530,9 +590,7 @@ components:
           description: The length of the recording
         artist:
           type: string
-          description: Artista de la canción 
-
-                   
+          description: Artista de la canción                
     recording:
       required:
         - id
@@ -545,8 +603,7 @@ components:
         "title": "[Mamma Mia] Dancing Queen",
         "length": "4:00",
         "artist": "	ABBA",
-        }
-      
+        } 
     new_element:
       type: object
       properties:
