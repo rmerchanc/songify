@@ -876,7 +876,7 @@ components:
           type: string
           description: Official name of the release
         artist:
-          type: array
+          type: string
           description: Official name of the artist, it could be a person or a band
         date: 
           type: string
