@@ -196,11 +196,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/error'    
-
   /artist/{id}/release:
     parameters: 
       - $ref: "#/components/parameters/id"
     get:
+      tags: 
+        - release
       summary: GET all the releases from a specific artist of the API
       description: Retreives all the information of the available releases from an artist
       responses: 
@@ -209,7 +210,13 @@ paths:
           content:
             application/json:
               schema: 
-                $ref: "#/components/schemas/releases" 
+                $ref: "#/components/schemas/releases"
+        '404':
+          description: There is no artist with that identifier
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error" 
         '500':
           description: The server encountered an unexpected condition that prevented it from fulfilling the request
           content: 
@@ -229,7 +236,7 @@ paths:
               $ref: "#/components/schemas/release"
       responses: 
         '201': 
-          description: Created a new artist successfully based on the information provided
+          description: Created a new release successfully based on the information provided
           content:
             application/json:
               schema: 
@@ -252,30 +259,35 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/error'
+        '404':
+          description: There is no artist with that identifier
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error"
         '500':
           description: The server encountered an unexpected condition that prevented it from fulfilling the request
           content: 
             application/json:
               schema:
                 $ref: '#/components/schemas/error'
-
   /artist/{id}/release/{id}:
     parameters: 
       - $ref: "#/components/parameters/id"
     get:
       tags: 
         - release
-      summary: GET one artist of the API
-      description: Retreives all the information of the specified artist
+      summary: GET one artist's release of the API
+      description: Retreives all the information of the specified artist's release
       responses: 
         '200': 
-          description: All the information of the specified artist was successfully retreived
+          description: All the information of the specified artist's release was successfully retreived
           content:
             application/json:
               schema: 
                 $ref: "#/components/schemas/release"
         '404':
-          description: There is no artist with that identifier
+          description: There is no artist / release with that identifier
           content:
             application/json:
               schema:
@@ -289,8 +301,8 @@ paths:
     put:
       tags: 
         - release
-      summary: PUT one artist of the API
-      description: Updates all or part of the information of the specified artist
+      summary: PUT one artist's release of the API
+      description: Updates all or part of the information of the specified artist's release
       requestBody:
         required: true
         content: 
@@ -299,7 +311,7 @@ paths:
                 $ref: "#/components/schemas/release_update"
       responses: 
         '200': 
-          description: All the information provided was successfully updated for the specified artist
+          description: All the information provided was successfully updated for the specified artist's release
           content:
             application/json:
               schema: 
@@ -323,7 +335,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/error'
         '404':
-          description: There is no artist with that identifier
+          description: There is no artist / release with that identifier
           content:
             application/json:
               schema:
@@ -341,7 +353,7 @@ paths:
       description: Deletes all the information of the specified release of the artist
       responses: 
         '200': 
-          description: All the information provided was successfully deleted for the artist
+          description: All the information provided was successfully deleted for the artist's release
         '401':
           description: Unauthorized request due to missing credentials 
           content: 
@@ -355,7 +367,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/error'
         '404':
-          description: There is no artist with that identifier
+          description: There is no artist / release with that identifier
           content:
             application/json:
               schema:
@@ -366,8 +378,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/error'
-  
-  
   /artist/{id}/recording:
     parameters: 
       - $ref: "#/components/parameters/id"
@@ -857,7 +867,7 @@ components:
         "url_recording": "https://localhost/api/v3/artist/1/release/2/recording"
         }
       ] 
-    release_update: # esto debería cambiar, ajustarlo para release_update y release
+    release_update:
       type: object
       properties: 
         id: 
@@ -882,6 +892,9 @@ components:
           type: string
           format: uri
           description: URI to the recordings of this release
+      example: {
+        "date": "2000-08-10"
+      }
     release:
       required:
         - id
@@ -892,8 +905,7 @@ components:
         - language
         - url_recording
       additionalProperties: false
-      example: [
-        {
+      example: {
         "id": 1,
         "title": "Parachutes",
         "artist": "Coldplay",
@@ -903,7 +915,6 @@ components:
         "language": "en",
         "url_recording": "https://localhost/api/v3/artist/1/release/1/recording"
         }
-      ]
     recordings:
       type: array 
       items:
@@ -912,12 +923,12 @@ components:
         "id": 1,
         "title": "[Mamma Mia] Dancing Queen",
         "length": "4:00",
-        "artist": "ABBA",
+        "artist": "ABBA"
         },{
         "id": 2,
         "title": "Into the Blue",
         "length": "5:34",
-        "artist": "Moby",
+        "artist": "Moby"
         }]
     recording_update:
       type: object
@@ -932,7 +943,10 @@ components:
           description: The length of the recording
         artist:
           type: string
-          description: Artista de la canción                
+          description: Artista de la canción  
+      example: {
+        "length": "3:00"
+      }              
     recording:
       required:
         - id
@@ -944,8 +958,8 @@ components:
         "id": 1,
         "title": "[Mamma Mia] Dancing Queen",
         "length": "4:00",
-        "artist": "	ABBA",
-        } 
+        "artist": "	ABBA"
+      } 
     new_element:
       type: object
       properties:
