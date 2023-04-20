@@ -44,7 +44,7 @@ function makeRequest(offset) {
             // Make a request if the offset has not reached 1000 and make the request with 1 second delay each
             setTimeout(() => makeRequest(offset + 25), 1000);
         } else {
-            // Then the desired offset is reached, convert the array to a JSON
+            // When the desired offset is reached, convert the array to a JSON
             file = 'artists1000.json';
             fs.writeFile(file, JSON.stringify(results), err => {
                 if (err) throw err;
