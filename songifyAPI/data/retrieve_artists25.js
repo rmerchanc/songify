@@ -4,6 +4,7 @@ const url = "https://musicbrainz.org/ws/2/artist/";
 const params = {
   query: "type:person",
   offset: 0,
+  //limit: 1000,
   fmt: "json",
   fields: "id,type,name,gender,area.name,life-span.begin,life-span.end"
 };
