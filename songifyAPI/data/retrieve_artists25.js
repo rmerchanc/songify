@@ -1,7 +1,6 @@
 const fs = require('fs');
 const fetch = require("node-fetch");
 const url = "https://musicbrainz.org/ws/2/artist/";
- // no deja modificar el limit por defecto, el cual es 25
 const params = {
   query: "type:person",
   offset: 0,
@@ -34,9 +33,10 @@ fetch(url + "?" + new URLSearchParams(params), {
     }));
   
     // Save the data to a JSON file
-    fs.writeFile('artists.json', JSON.stringify(artists), err => {
+    file = 'artists25.json'
+    fs.writeFile(file, JSON.stringify(artists), err => {
       if (err) throw err;
-      console.log('Data saved to artists.json');
+      console.log('Data saved to ' + file);
     });
   })
   .catch(error => {

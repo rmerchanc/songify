@@ -9,10 +9,10 @@ const params = {
   fields: 'id,type,name,gender,area.name,life-span.begin,life-span.end'
 };
 
-// Crear un array vacío para guardar los resultados temporalmente
+// Create an empty array to store all the results
 let results = [];
 
-// Definir una función recursiva que haga peticiones con un delay de 1 segundo
+// Define a recursive function that makes a request with a delay of one second
 function makeRequest(offset) {
   params.offset = offset;
   
@@ -23,9 +23,9 @@ function makeRequest(offset) {
   })
     .then(res => res.json())
     .then(data => {
-        // Comprobar que data.artists tiene cotenido antes de hacer el mapping 
+        // Check whether data.artist has content
         if (data.artists) {
-            // Extraer los campos deseados del objeto artista
+            // Extract the desired fields from each artist object
             const artists = data.artists.map(artist => ({
                 id: artist.id,
                 type: artist.type,
@@ -35,24 +35,25 @@ function makeRequest(offset) {
                 begin: artist['life-span'].begin,
                 end: artist['life-span'].end
             }));
-            // Añadir los resultados al array
+            // Save the results into the array
             results = results.concat(artists);
         }
         
-        // Incrementar el offset hasta que llegue a los 1000 registros
+        // Increment the offset up to 1000
         if (offset + 25 < 1000) {
-            // Hacer una nueva petición si no se ha llegado al offset deseado y con un delay de un segundo
+            // Make a request if the offset has not reached 1000 and make the request with 1 second delay each
             setTimeout(() => makeRequest(offset + 25), 1000);
         } else {
-            // Cuando se alcanza el offset deseado, crear el JSON
-            fs.writeFile('artists2.json', JSON.stringify(results), err => {
+            // Then the desired offset is reached, convert the array to a JSON
+            file = 'artists1000.json';
+            fs.writeFile(file, JSON.stringify(results), err => {
                 if (err) throw err;
-                console.log('Results saved to artists2.json');
+                console.log('Results saved to ' + file);
             });
         }
     })
     .catch(err => console.error(err));
 }
 
-// Empezar la petición sin offset
+// Make a request without offset
 makeRequest(0);
