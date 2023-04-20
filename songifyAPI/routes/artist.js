@@ -51,8 +51,8 @@ router.get("/:id", function (req, res, next) {
         type: artistInfo.type,
         area: artistInfo.area, // too much information
         begin_date: artistInfo.begin_date,
-        url_releases: "https://localhost/api/v3/artist/1/releases",
-        url_recordings: "https://localhost/api/v3/artist/1/recordings",
+        url_releases: "https://localhost/api/v3/artist/1/release",
+        url_recordings: "https://localhost/api/v3/artist/1/recording",
       });
     })
     .catch((error) => {
