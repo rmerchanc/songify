@@ -2,6 +2,31 @@ var express = require("express");
 var router = express.Router();
 const fetch = require("node-fetch");
 
+
+router.get('/', async (req, res) => {
+  const limit = Math.min(req.query.limit, MAX_RESULTS);
+  let next = req.query.next;
+  let query = {}
+  if (next){
+    query = {_id: {$lt: next}}
+  }
+  const dbConnect = dbo.getDb();
+  let results = await dbConnect     
+    .collection('artist')
+    .find(query)
+    .sort({_id: -1})
+    .limit(limit)
+    .toArray()
+    .catch(err => res.status(400).send('Error to fetch artists'));
+  next = results.length == limit ? results[results.length - 1]._id : null;
+  res.json({results, next}).status(200);
+});
+
+
+
+
+
+/*
 router.get("/", function (req, res, next) {
   res.send([
     {
@@ -25,6 +50,9 @@ router.get("/", function (req, res, next) {
     },
   ]);
 });
+
+
+María & Ramón para recuperar datos de la API:
 
 router.get("/:id", function (req, res, next) {
   if (req.params.id) {
@@ -59,5 +87,5 @@ router.get("/:id", function (req, res, next) {
       console.error(error);
     });
 });
-
+*/
 module.exports = router;

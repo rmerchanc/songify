@@ -4,9 +4,15 @@
  * Module dependencies.
  */
 
+// importa las variables de entorno donde están definidas las variables para la conexión a Mongo
+require('dotenv').config()
+
 var app = require('../app');
 var debug = require('debug')('songifyapi:server');
 var http = require('http');
+
+// conexión a la BD
+require('../db/conn').connectToDatabase();
 
 /**
  * Get port from environment and store in Express.
