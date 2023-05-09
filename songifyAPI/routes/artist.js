@@ -1,33 +1,33 @@
 var express = require("express");
-const { ObjectId } = require("mongodb");
+//const { ObjectId } = require("mongodb");
 var router = express.Router();
 const fetch = require("node-fetch");
+const dbo = require('../db/conn');
+const ObjectId = require('mongodb').ObjectId;
+const MAX_RESULTS = parseInt(process.env.MAX_RESULTS);
 
 
 router.get('/', async (req, res) => {
-  /*
-  const limit = MAX_RESULTS;
+  let limit = MAX_RESULTS;
   if (req.query.limit){
-    limit = Math.min(parseInt(req.query.limit), MAX_RESULTS);
+    limit =  Math.min(parseInt(req.query.limit), MAX_RESULTS);
   }
   let next = req.query.next;
   let query = {}
   if (next){
     query = {_id: {$lt: new ObjectId(next)}}
-  }*/
+  }
   const dbConnect = dbo.getDb();
-  let results = await dbConnect     
+  let results = await dbConnect
     .collection('artist')
     .find(query)
     .sort({_id: -1})
-    //.limit(limit)
+    .limit(limit)
     .toArray()
     .catch(err => res.status(400).send('Error to fetch artists'));
   next = results.length == limit ? results[results.length - 1]._id : null;
   res.json({results, next}).status(200);
 });
-
-
 
 
 
