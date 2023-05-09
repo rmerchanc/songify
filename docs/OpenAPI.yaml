@@ -822,16 +822,17 @@ components:
       example: {
         "type": "Choir"
       }
-    artist: 
-      required: 
-        - id
-        - name
-        - type
-        - area
-        - begin_date
-        - url_release
-        - url_recording
-      $ref: "#/components/schemas/artist_update"
+    artist:
+      allOf:
+        - required: 
+          - id
+          - name
+          - type
+          - area
+          - begin_date
+          - url_release
+          - url_recording
+        - $ref: "#/components/schemas/artist_update"
       example: {
         "id": 1,
         "name": "Coldplay",
@@ -899,16 +900,17 @@ components:
         "date": "2000-08-10"
       }
     release:
-      required:
-        - id
-        - title
-        - artist
-        - date
-        - country
-        - label
-        - language
-        - url_recording
-      $ref: "#/components/schemas/release_update"
+      allOf:
+        - required:
+          - id
+          - title
+          - artist
+          - date
+          - country
+          - label
+          - language
+          - url_recording
+        - $ref: "#/components/schemas/release_update"
       additionalProperties: false
       example: {
         "id": 1,
@@ -953,12 +955,13 @@ components:
         "length": "3:00"
       }              
     recording:
-      required:
-        - id
-        - title
-        - length
-        - artist
-      $ref: '#/components/schemas/recording_update'
+      allOf:
+        - required:
+          - id
+          - title
+          - length
+          - artist
+        - $ref: '#/components/schemas/recording_update'
       example: {
         "id": 1,
         "title": "[Mamma Mia] Dancing Queen",
