@@ -203,5 +203,43 @@ function tiempo(tiempo) {
 
   return `${minutos}:${seg}`
 }
+//8e302fa1-4e1a-4f71-8324-4cee43fbd45a
+router.get("/:id/release/:idRelease/recordings", async function (req, res, next) {
+
+  //const url = `https://musicbrainz.org/release/${req.params.idRelease}`
+               //https://musicbrainz.org/release/8e302fa1-4e1a-4f71-8324-4cee43fbd45a
+               //artista: d87e52c5-bb8d-4da8-b941-9f4928627dc8
+               //release: dee43093-f736-3b34-90b0-f5a9d1546117
+               const url = 'https://musicbrainz.org/ws/2/artist/d87e52c5-bb8d-4da8-b941-9f4928627dc8/release/dee43093-f736-3b34-90b0-f5a9d1546117?inc=recordings'
+  var datos = [];
+  var objeto = {};
+
+  let d = await axios.get(url)
+  console.log(d);
+  let canciones = d.data
+  
+  for (var i = 0; i < canciones.recording-list.length; i++) {
+
+    var nombre = canciones.recording[i];
+
+    datos.push({
+      "id_recordig": nombre.id,
+      "title": nombre.title,
+      "length": tiempo(nombre.length)
+    });
+  }
+
+  objeto.datos = datos;
+  res.send(datos)
+  
+});
+
+
+
+
+
+
+
+
 
 module.exports = router;
