@@ -8,6 +8,15 @@ const MAX_RESULTS = parseInt(process.env.MAX_RESULTS);
 const xml2js = require('xml2js');
 const axios = require("axios")
 
+//prueba para xml:
+const { XMLParser, XMLBuilder, XMLValidator } = require('fast-xml-parser');
+const options = { ignoreAttributes: true };
+const parser = new XMLParser(options);
+
+//prueba maria
+
+
+
 router.get('/', async (req, res) => {
   let limit = MAX_RESULTS;
   if (req.query.limit) {
@@ -162,7 +171,7 @@ router.get("/:id/recordings", async function (req, res, next) {
 
   let d = await axios.get(url)
   let canciones = d.data
-  
+
   for (var i = 0; i < canciones.recordings.length; i++) {
 
     var nombre = canciones.recordings[i];
@@ -208,33 +217,72 @@ function tiempo(tiempo) {
 router.get("/:id/release/:idRelease/recordings", async function (req, res, next) {
 
   //const url = `https://musicbrainz.org/release/${req.params.idRelease}`
-               //https://musicbrainz.org/release/8e302fa1-4e1a-4f71-8324-4cee43fbd45a
-               //artista: d87e52c5-bb8d-4da8-b941-9f4928627dc8
-               //release: dee43093-f736-3b34-90b0-f5a9d1546117
-               // ESTO FUNCIONA https://musicbrainz.org/ws/2/release/8e302fa1-4e1a-4f71-8324-4cee43fbd45a?inc=recordings
-  
+  //https://musicbrainz.org/release/8e302fa1-4e1a-4f71-8324-4cee43fbd45a
+  //artista: d87e52c5-bb8d-4da8-b941-9f4928627dc8
+  //release: dee43093-f736-3b34-90b0-f5a9d1546117
+  // ESTO FUNCIONA https://musicbrainz.org/ws/2/release/8e302fa1-4e1a-4f71-8324-4cee43fbd45a?inc=recordings
+
   const url = `https://musicbrainz.org/ws/2/release/${req.params.idRelease}?inc=recordings&fmt=xml`
-  var datos = [];
-  var objeto = {};
+
+
 
   let d = await axios.get(url)
-  console.log(d.data);
-  //let canciones = d.data
+  let xml = d.data;
+  //console.log(d.data);
+  //console.log(d.data);
+
+  //jsonObj = parser.parse(xml);
+  //console.log('\nprueba xml:\n' + jsonObj.metadata.release);
   /*
-  for (var i = 0; i < canciones.recording-list.length; i++) {
+  const index = xml.indexOf('\n');
+  if (index !== -1) {
+    xml = xml.substring(index + 1);
+  }
 
-    var nombre = canciones.recording[i];
+  let jsonObj = '';
+  jsonObj = parser.parse(xml);
+  console.log(jsonObj.metadata.release)
+  res.send(jsonObj.metadata.release);
+  //const tracks = result.metadata.release[0]['medium-list'][0].medium[0]['track-list'][0].track;
+  */
 
-    datos.push({
-      "id_recordig": nombre.id,
-      "title": nombre.title,
-      "length": tiempo(nombre.length)
+  axios.get(url)
+    .then(response => {
+      const xml = response.data;
+
+      // Parsear el XML
+      xml2js.parseString(xml, (err, result) => {
+        if (err) {
+          console.error(err);
+          return err;
+        }
+        const tracks = result.metadata.release[0]['medium-list'][0].medium[0]['track-list'][0].track;
+        console.log(tracks)
+
+        // Crear un objeto para el nuevo XML
+        const newXmlObj = {
+          tracks: []
+        };
+        
+        // Recorrer las pistas y extraer los atributos deseados
+        tracks.forEach(track => {
+          const title = track.recording[0].title[0];
+          const length = track.recording[0].length[0];
+
+          // Agregar la pista al objeto del nuevo XML
+          newXmlObj.tracks.push({ track: { title, length } });
+        });
+
+        // Convertir el objeto a XML
+        const builder = new xml2js.Builder();
+        const newXml = builder.buildObject(newXmlObj);
+
+        res.send(newXml)
+      });
+
     });
-  }*/
 
-  //objeto.datos = datos;
-  res.send(d.data)
-  
+
 });
 
 
