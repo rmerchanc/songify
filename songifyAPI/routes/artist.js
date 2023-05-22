@@ -266,11 +266,12 @@ router.get("/:id/release/:idRelease/recordings", async function (req, res, next)
         
         // Recorrer las pistas y extraer los atributos deseados
         tracks.forEach(track => {
+          const id = track.recording[0].$.id;
           const title = track.recording[0].title[0];
-          const length = track.recording[0].length[0];
+          const length = tiempo(track.recording[0].length[0]);
 
           // Agregar la pista al objeto del nuevo XML
-          newXmlObj.tracks.push({ track: { title, length } });
+          newXmlObj.tracks.push({ track: { id, title, length } });
         });
 
         // Convertir el objeto a XML
