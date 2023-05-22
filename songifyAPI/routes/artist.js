@@ -282,11 +282,25 @@ router.get("/:id/release/:idRelease/recordings", async function (req, res, next)
       });
 
     });
-
-
 });
 
 
+// recordings del release por id es decir te devuelve una cancion solo (del album se supone, pero dado un album?)
+router.get("/:id/release/:idRelease/recordings/:idIndividual", async function (req, res, next) {
+
+  const url = `https://musicbrainz.org/ws/2/recording/${req.params.idIndividual}`
+  axios.get(url)
+    .then(response => {
+
+      let canciones = response.data
+
+      res.send({
+        "id": canciones.id,
+        "title": canciones.title,
+        "length": tiempo(canciones.length)
+      });
+    });
+});
 
 
 
