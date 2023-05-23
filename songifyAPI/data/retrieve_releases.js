@@ -10,6 +10,7 @@ try {
     console.error(err);
 }
 const artistsID = jsonData.map(item => item.id);
+console.log(artistsID);
 
 // URL
 const url = 'https://musicbrainz.org/ws/2/release';
@@ -18,6 +19,7 @@ const url = 'https://musicbrainz.org/ws/2/release';
 let params = {
     artist: null,
     fmt: 'json',
+    limit: 2000, 
     fields: 'id,title,date,country,text-representation.language'
 };
 
@@ -43,7 +45,8 @@ function makeRequest(idArtist) {
             title: release.title,
             date: release['release-events'][0].date,
             country: release.country,
-            languague: release['text-representation'].language
+            languague: release['text-representation'].language,
+            id_artist: idArtist
         }));
         // Save the results into the array
         results = results.concat(releases);
@@ -61,6 +64,8 @@ function makeRequest(idArtist) {
 }
 
 // Make a request
-artistsID.forEach(artistID => {
-    setTimeout(() => makeRequest(artistID), 1000);
-});
+for (const artistID of artistsID) {
+    //const artistID = artistsID[index];
+    console.log(artistID)
+    makeRequest(artistID);
+  }
