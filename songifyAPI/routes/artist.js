@@ -195,7 +195,6 @@ router.get("/:id/release/:idRelease/recordings", async function (req, res, next)
           return err;
         }
         const tracks = result.metadata.release[0]['medium-list'][0].medium[0]['track-list'][0].track;
-        console.log(tracks)
 
         // Crear un objeto para el nuevo XML
         const newXmlObj = {
@@ -227,22 +226,41 @@ router.get("/:id/release/:idRelease/recordings", async function (req, res, next)
  * Get /artist/{id}/release/{id}/recording/{id}
  * Conexión a la API que devuelve una canción de un álbum de un artista
  * Formato XML
- * TODO: q funcione
+ * Ejemplo de idIndividual: 822224c8-b19d-4352-a0b8-64571c6651ba
  */
 router.get("/:id/release/:idRelease/recordings/:idIndividual", async function (req, res, next) {
 
-  const url = `https://musicbrainz.org/ws/2/recording/${req.params.idIndividual}`
-  axios.get(url)
+  const url = `https://musicbrainz.org/ws/2/recording/${req.params.idIndividual}?fmt=xml`
+
+    axios.get(url)
     .then(response => {
+      const xml = response.data;
 
-      let canciones = response.data
+      // Parsear el XML
+      xml2js.parseString(xml, (err, result) => {
+        if (err) {
+          console.error(err);
+          return err;
+        }
+        
+        const tracks = result.metadata;
+        const id = tracks.recording[0].$.id;
+        const title = tracks.recording[0].title[0];
+        const length = tiempo(tracks.recording[0].length[0]);
 
-      res.send({
-        "id": canciones.id,
-        "title": canciones.title,
-        "length": tiempo(canciones.length)
+        // Crear un objeto para el nuevo XML con los atributos
+        const newXmlObj = {
+          track: { id, title, length }
+        };
+
+        // Convertir el objeto a XML
+        const builder = new xml2js.Builder();
+        const newXml = builder.buildObject(newXmlObj);
+
+        res.send(newXml);
       });
     });
+
 });
 
 
