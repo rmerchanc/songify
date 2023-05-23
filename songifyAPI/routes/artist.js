@@ -53,20 +53,36 @@ router.get('/', async (req, res) => {
 //code
 
 
-/**
- * Get /artist/{id}
- * Conexión a MongoDB que devuelve un artista a partir de un id
- * TODO: get
- */
-//code
+router.get("/:id", async function (req, res, next) {
+  const dbConnect = dbo.getDb();
+  let query = {_id: new ObjectId(req.params.id)};
+  let result = await dbConnect
+    .collection('artist')
+    .findOne(query);
+  if (!result){
+    res.send("Not found").status(404);
+  } else {
+    res.status(200).send(result);
+  }
+
+});
 
 
-/**
- * Put /artist/{id}
- * Conexión a MongoDB que modifica(actualiza) un artista a partir de un id
- * TODO: put modificando uno, dos, tres o todos los campos posibles en del artista
- */
-//code
+//Pasarle como parametro el id de la bbdd
+router.put("/:id", async function (req, res, next) {
+
+  const query = {_id: new ObjectId(req.params.id)};
+  const update = {$set:{ 
+    type: req.body.type,
+    name: req.body.name,
+  }};
+  const dbConnect = dbo.getDb();
+  let result = await dbConnect
+    .collection('artist')
+    .updateOne(query, update);
+  res.status(200).send(result);
+
+});
 
 
 /**
@@ -77,12 +93,27 @@ router.get('/', async (req, res) => {
 //code
 
 
-/**
- * Get /artist/{id}/release
- * Conexión a MongoDB que devuelve los álbumes de un artista concreto
- * TODO: get
- */
-//code
+router.get('/:id/release', async (req, res) => {
+  let limit = MAX_RESULTS;
+  if (req.query.limit) {
+    limit = Math.min(parseInt(req.query.limit), MAX_RESULTS);
+  }
+  let next = req.query.next;
+  let query = {}
+  if (next) {
+    query = { _id: { $lt: new ObjectId(next) } }
+  }
+  const dbConnect = dbo.getDb();
+  let results = await dbConnect
+    .collection('release')
+    .find(query)
+    .sort({ _id: -1 })
+    .limit(limit)
+    .toArray()
+    .catch(err => res.status(400).send('Error to fetch artists'));
+  next = results.length == limit ? results[results.length - 1]._id : null;
+  res.json({ results, next }).status(200);
+});
 
 
 /**
@@ -93,28 +124,47 @@ router.get('/', async (req, res) => {
 //code
 
 
-/**
- * Get /artist/{id}/release/{id}
- * Conexión a MongoDB que devuelve el álbum de un artista
- * TODO: get
- */
-//code
+//646d083ddc30ca567f175175
+router.get("/:id/release/:idRelease", async function (req, res, next) {
+  const dbConnect = dbo.getDb();
+  let query = {_id: new ObjectId(req.params.idRelease)};
+  let result = await dbConnect
+    .collection('release')
+    .findOne(query);
+  if (!result){
+    res.send("Not found").status(404);
+  } else {
+    res.status(200).send(result);
+  }
+});
 
 
-/**
- * Put /artist/{id}/release/{id}
- * Conexión a MongoDB que modifica(actualiza) el álbum de un artista
- * TODO: put modificando uno, dos, tres o todos los campos posibles del álbum
- */
-//code
+//646d083ddc30ca567f175175
+router.put("/:id/release/:idRelease", async function (req, res, next) {
+  const query = {_id: new ObjectId(req.params.idRelease)};
+  const update = {$set:{
+    title: req.body.title,
+    date: req.body.date,
+    country: req.body.country
+  }};
+  const dbConnect = dbo.getDb();
+  let result = await dbConnect
+    .collection('release')
+    .updateOne(query, update);
+  res.status(200).send(result);
+});
 
 
-/**
- * Delete /artist/{id}/release/{id}
- * Conexión a MongoDB que borra un álbum de un artista
- * TODO: delete
- */
-//code
+//646d083ddc30ca567f175175
+router.delete("/:id/release/:idRelease", async function (req, res, next) {
+  const query = { _id: new ObjectId(req.params.idRelease) };
+  const dbConnect = dbo.getDb();
+  let result = await dbConnect
+    .collection('release')
+    .deleteOne(query);
+  res.status(200).send(result);
+});
+
 
 
 /**
