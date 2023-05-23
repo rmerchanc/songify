@@ -1,5 +1,4 @@
 var express = require("express");
-//const { ObjectId } = require("mongodb");
 var router = express.Router();
 const fetch = require("node-fetch");
 const dbo = require('../db/conn');
@@ -8,15 +7,12 @@ const MAX_RESULTS = parseInt(process.env.MAX_RESULTS);
 const xml2js = require('xml2js');
 const axios = require("axios")
 
-//prueba para xml:
-const { XMLParser, XMLBuilder, XMLValidator } = require('fast-xml-parser');
-const options = { ignoreAttributes: true };
-const parser = new XMLParser(options);
 
-//prueba maria
-
-
-
+/**
+ * Get /artist
+ * Conexión a MongoDB que devuelve todos los artistas
+ * TODO: paginación
+ */
 router.get('/', async (req, res) => {
   let limit = MAX_RESULTS;
   if (req.query.limit) {
@@ -40,128 +36,93 @@ router.get('/', async (req, res) => {
 });
 
 
-
-/*
-router.get("/", function (req, res, next) {
-  res.send([
-    {
-      id: 1,
-      name: "Coldplay",
-      type: "Group",
-      area: "United Kingdom",
-      begin_date: "1996-09",
-      url_releases: "https://localhost/api/v3/artist/1/releases",
-      url_recordings: "https://localhost/api/v3/artist/1/recordings",
-    },
-    {
-      id: 2,
-      name: "John Williams",
-      type: "Person",
-      gender: "Male",
-      area: "Australia",
-      begin_date: "1941-04-24",
-      url_releases: "https://localhost/api/v3/artist/2/releases",
-      url_recordings: "https://localhost/api/v3/artist/2/recordings",
-    },
-  ]);
-});
+/**
+ * Get /artist?filtro=:param
+ * Conexión a MongoDB que devuelve todos los artistas filtrando los resultados por...
+ * TODO: paginación
+ * TODO:  filtro
+ */
+//code
 
 
-María & Ramón para recuperar datos de la API:*/
-
-/*router.get("/:id", function (req, res, next) {
-  if (req.params.id) {
-    // here should be some type of convertion between our IDs and the API's MBIDs
-    console.log("The ID introduced is " + req.params.id);
-  }
-  const mbid = "cc197bad-dc9c-440d-a5b5-d52ba2e14234"; // MusicBrainz Identifiers (MBIDs)
-  const url = `https://musicbrainz.org/ws/2/artist/${mbid}?fmt=json`;
-
-  fetch(url)
-    // GET request to the API
-    .then((response) => {
-      // response code 200
-      if (response.ok) {
-        return response.json();
-      } else {
-        throw new Error("Error: " + response.status);
-      }
-    })
-    .then((artistInfo) => {
-      res.send({
-        id: 1,
-        name: artistInfo.name,
-        type: artistInfo.type,
-        area: artistInfo.area, // too much information
-        begin_date: artistInfo.begin_date,
-        url_releases: "https://localhost/api/v3/artist/1/release",
-        url_recordings: "https://localhost/api/v3/artist/1/recording",
-      });
-    })
-    .catch((error) => {
-      console.error(error);
-    });
-});*/
-
-router.get("/:id", async function (req, res, next) {
-  console.log(req.params.id)
-  const url = `https://musicbrainz.org/ws/2/artist/${req.params.id}?fmt=json`;
-
-  let d = await axios.get(url)
-  let importa = d.data
-  console.log(importa)
-
-  //axius
-  /*fetch(url)
-    .then(response => response.json())
-    .then(data => {
-      console.log(data.recordings.length)
-      if (data.recordings && data.recordings.length > 0) {
-        data.recordings.forEach(recording => {
-          const title = recording.title;
-          const duration = recording.length / 1000; 
-          const artist = recording["artist-credit"][0].artist.name;
-          console.log(`Title: ${title}, Artist: ${artist}, Duration: ${duration}s`);
-        });
-      } else {
-        console.log("No recordings found for this artist.");
-      }
-    })
-    .catch(error => console.error(error));*/
+/**
+ * Post /artist
+ * Conexión a MongoDB que crea un nuevo artista
+ * TODO: post
+ */
+//code
 
 
-  /* if (req.params.id) {
-     // here should be some type of convertion between our IDs and the API's MBIDs
-     console.log("The ID introduced is " + req.params.id);
-   }
-   const mbid = "74df4e2f-fe75-4b4a-87c5-3f1b4bc95aa2"; // MusicBrainz Identifiers (MBIDs)
-   //const url = `https://musicbrainz.org/ws/2/artist/${mbid}?fmt=json`;
-   
-   const artistId = "74df4e2f-fe75-4b4a-87c5-3f1b4bc95aa2"; 
-   const url = `https://musicbrainz.org/ws/2/artist/${req.params.id}/recordings`;
-   
-   
-   fetch(url)
-   .then(response => response.json())
-   .then(xml => xml2js.parseStringPromise(xml))
-   .then(result => {
-     console.log(result)
-     if (result && result.recordingList && result.recordingList.recording) {
-       const recordings = result.recordingList.recording;
-       recordings.forEach(recording => {
-         const title = recording.title;
-         const artist = recording['artist-credit'][0].name;
-         const duration = recording.length;
-         console.log(`Title: ${title}, Artist: ${artist}, Duration: ${duration}`);
-       });
-     } else {
-       console.log('No recordings found for this artist.');
-     }
-   })
-   .catch(error => console.error(error));*/
-});
+/**
+ * Get /artist/{id}
+ * Conexión a MongoDB que devuelve un artista a partir de un id
+ * TODO: get
+ */
+//code
 
 
+/**
+ * Put /artist/{id}
+ * Conexión a MongoDB que modifica(actualiza) un artista a partir de un id
+ * TODO: put modificando uno, dos, tres o todos los campos posibles en del artista
+ */
+//code
+
+
+/**
+ * Delete /artist/{id}
+ * Conexión a MongoDB que borra un artista a partir de un id
+ * TODO: delete
+ */
+//code
+
+
+/**
+ * Get /artist/{id}/release
+ * Conexión a MongoDB que devuelve los álbumes de un artista concreto
+ * TODO: get
+ */
+//code
+
+
+/**
+ * Post /artist/{id}/release
+ * Conexión a MongoDB que crea un nuevo álbum para un artista
+ * TODO: post
+ */
+//code
+
+
+/**
+ * Get /artist/{id}/release/{id}
+ * Conexión a MongoDB que devuelve el álbum de un artista
+ * TODO: get
+ */
+//code
+
+
+/**
+ * Put /artist/{id}/release/{id}
+ * Conexión a MongoDB que modifica(actualiza) el álbum de un artista
+ * TODO: put modificando uno, dos, tres o todos los campos posibles del álbum
+ */
+//code
+
+
+/**
+ * Delete /artist/{id}/release/{id}
+ * Conexión a MongoDB que borra un álbum de un artista
+ * TODO: delete
+ */
+//code
+
+
+/**
+ * Get /artist/{id}/recording
+ * Conexión a la API que devuelve las canciones de un artista
+ * Formato JSON
+ * Ejemplo de id de un artista: cc197bad-dc9c-440d-a5b5-d52ba2e14234
+ */
 router.get("/:id/recordings", async function (req, res, next) {
 
   const url = `https://musicbrainz.org/ws/2/artist/${req.params.id}/recordings?inc=recordings`
@@ -186,8 +147,14 @@ router.get("/:id/recordings", async function (req, res, next) {
   objeto.datos = datos;
   res.send(datos)
 
-});
+})
 
+
+/**
+ * Get /artist/{id}/recording/{id}
+ * Conexión a la API que devuelve una canción de un artista
+ * Formato JSON
+ */
 router.get("/:id/recording/:id1", async function (req, res, next) {
 
   const url = `https://musicbrainz.org/ws/2/recording/${req.params.id1}`
@@ -205,46 +172,17 @@ router.get("/:id/recording/:id1", async function (req, res, next) {
     });
 });
 
-function tiempo(tiempo) {
-  const segundos = (Math.floor(tiempo / 1000));
-  const minutos = Math.floor(segundos / 60);
-  const seg = (segundos % 60);
-
-  return `${minutos}:${seg}`
-}
-//8e302fa1-4e1a-4f71-8324-4cee43fbd45a
-//id del artista/release(álbum)/id del álbum/canciones -- devuelve las canciones
+/**
+ * Get /artist/{id}/release/{id}/recording
+ * Conexión a la API que devuelve la lista de canciones de un álbum de un artista
+ * Formato XML
+ * Ejemplo de idRelease:8e302fa1-4e1a-4f71-8324-4cee43fbd45a
+ * URL ejemplo de la API: https://musicbrainz.org/ws/2/release/8e302fa1-4e1a-4f71-8324-4cee43fbd45a?inc=recordings
+ * Ejemplo en Postman: localhost:3000/artist/234567890098765432/release/8e302fa1-4e1a-4f71-8324-4cee43fbd45a/recordings
+ */
 router.get("/:id/release/:idRelease/recordings", async function (req, res, next) {
 
-  //const url = `https://musicbrainz.org/release/${req.params.idRelease}`
-  //https://musicbrainz.org/release/8e302fa1-4e1a-4f71-8324-4cee43fbd45a
-  //artista: d87e52c5-bb8d-4da8-b941-9f4928627dc8
-  //release: dee43093-f736-3b34-90b0-f5a9d1546117
-  // ESTO FUNCIONA https://musicbrainz.org/ws/2/release/8e302fa1-4e1a-4f71-8324-4cee43fbd45a?inc=recordings
-
   const url = `https://musicbrainz.org/ws/2/release/${req.params.idRelease}?inc=recordings&fmt=xml`
-
-
-
-  let d = await axios.get(url)
-  let xml = d.data;
-  //console.log(d.data);
-  //console.log(d.data);
-
-  //jsonObj = parser.parse(xml);
-  //console.log('\nprueba xml:\n' + jsonObj.metadata.release);
-  /*
-  const index = xml.indexOf('\n');
-  if (index !== -1) {
-    xml = xml.substring(index + 1);
-  }
-
-  let jsonObj = '';
-  jsonObj = parser.parse(xml);
-  console.log(jsonObj.metadata.release)
-  res.send(jsonObj.metadata.release);
-  //const tracks = result.metadata.release[0]['medium-list'][0].medium[0]['track-list'][0].track;
-  */
 
   axios.get(url)
     .then(response => {
@@ -263,7 +201,7 @@ router.get("/:id/release/:idRelease/recordings", async function (req, res, next)
         const newXmlObj = {
           tracks: []
         };
-        
+
         // Recorrer las pistas y extraer los atributos deseados
         tracks.forEach(track => {
           const id = track.recording[0].$.id;
@@ -285,7 +223,12 @@ router.get("/:id/release/:idRelease/recordings", async function (req, res, next)
 });
 
 
-// recordings del release por id es decir te devuelve una cancion solo (del album se supone, pero dado un album?)
+/**
+ * Get /artist/{id}/release/{id}/recording/{id}
+ * Conexión a la API que devuelve una canción de un álbum de un artista
+ * Formato XML
+ * TODO: q funcione
+ */
 router.get("/:id/release/:idRelease/recordings/:idIndividual", async function (req, res, next) {
 
   const url = `https://musicbrainz.org/ws/2/recording/${req.params.idIndividual}`
@@ -303,9 +246,16 @@ router.get("/:id/release/:idRelease/recordings/:idIndividual", async function (r
 });
 
 
+/**
+ * Función tiempo(param) que devuelve el tiempo proporcionado en formato mm:ss
+ * param: tiempo en segundos
+ */
+function tiempo(tiempo) {
+  const segundos = (Math.floor(tiempo / 1000));
+  const minutos = Math.floor(segundos / 60);
+  const seg = (segundos % 60);
 
-
-
-
+  return `${minutos}:${seg}`
+}
 
 module.exports = router;
