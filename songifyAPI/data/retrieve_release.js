@@ -1,56 +1,58 @@
 const fetch = require('node-fetch');
 const fs = require('fs');
-let jsonData; 
 
-try {
-    const data = fs.readFileSync('artists.json', 'utf8');
-    jsonData = JSON.parse(data);
-} catch (err) {
-    console.error(err);
-}
+// URL
+const url = 'https://musicbrainz.org/ws/2/release';
 
-const artistId = jsonData.map(item => item.id);
-
-let results = [];
-
-const getDataForAllArtists = async () => {
-    const limit = 25;
-    artistId.forEach(id => {
-        let offset = 0;
-        const getNextPage = () => {
-            fetch(`https://musicbrainz.org/ws/2/release?artist=${id}&fmt=json&fields=id+title+artist+date+country+label+language&limit=${limit}&offset=${offset}`, {
-                headers: {
-                    'Accept': 'application/json'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.releases) {
-                    // Extract the desired fields from each release object
-                    const releases = data.releases.map(release => ({
-                        id: release.id,
-                        title: release.title,
-                        artist: release.artist,
-                        date: release.date,
-                        country: release.country,
-                        label: release.label,
-                        language: release.language
-                    }));
-                    results = results.concat(releases);
-                    offset += limit;
-                    getNextPage();
-                } else {
-                    file = 'releases.json';
-                    fs.writeFile(file, JSON.stringify(results), err => {
-                        if (err) throw err;
-                        console.log('Results saved to ' + file);
-                    });
-                }
-            })
-            .catch(error => console.log(error));
-        };
-        getNextPage();
-    });
+// Params of the query
+let params = {
+  query: 'type:release',
+  limit: 10,
+  fmt: 'json',
+  //fields: 'id, title, date, country, text, representation.language'
+  fields: 'id,title,artist-credit.name,release-events.date', 
+  artist : null
 };
 
-getDataForAllArtists();
+// Create an empty array to store all the results
+let results = [];
+
+function makeRequest(idArtist) {
+  params.artist = idArtist;
+  
+  fetch(`https://musicbrainz.org/ws/2/release?artist=${idArtist}&fmt=json&fields=id+title+date+country+text-representation.language`, {
+  //await fetch(`https://musicbrainz.org/ws/2/release?artist=${idArtist}&fmt=json&fields=id+title+date+country+text-representation.language`,{
+    headers: {
+      'Accept': 'application/json'
+    }
+  })
+  .then(res => res.json())
+  .then(data => {
+    // Check whether data.releases has content
+    if (data.releases) {
+        // Extract the desired fields from each release object
+        const releases = data.releases.map(release => ({
+            id: release.id,
+            title: release.title,
+            date: release['release-events'][0].date,
+            country: release.country,
+            languague: release['text-representation'].language
+        }));
+        // Save the results into the array
+        results = results.concat(releases);
+        console.log(results)
+    }
+
+    // Save it a JSON
+    file = 'release.json';
+    fs.writeFile(file, JSON.stringify(results), err => {
+        if (err) throw err;
+        console.log('Results saved to ' + file);
+    });
+    
+    })
+    .catch(err => console.error(err));
+}
+
+// Make a request
+makeRequest('f1a3fb4a-fff6-4556-a290-3704b109da90');
