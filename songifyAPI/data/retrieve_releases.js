@@ -1,6 +1,17 @@
 const fetch = require('node-fetch');
 const fs = require('fs');
 
+// Read ids contained in the file
+let jsonData;
+try {
+    const data = fs.readFileSync('artists.json', 'utf8');
+    jsonData = JSON.parse(data);
+} catch (err) {
+    console.error(err);
+}
+const artistsID = jsonData.map(item => item.id);
+console.log(artistsID);
+
 // URL
 const url = 'https://musicbrainz.org/ws/2/release';
 
@@ -8,6 +19,7 @@ const url = 'https://musicbrainz.org/ws/2/release';
 let params = {
     artist: null,
     fmt: 'json',
+    limit: 2000, 
     fields: 'id,title,date,country,text-representation.language'
 };
 
@@ -33,23 +45,27 @@ function makeRequest(idArtist) {
             title: release.title,
             date: release['release-events'][0].date,
             country: release.country,
-            languague: release['text-representation'].language
+            languague: release['text-representation'].language,
+            id_artist: idArtist
         }));
         // Save the results into the array
         results = results.concat(releases);
         console.log(results)
-    }
 
-    // Save it a JSON
-    file = 'release.json';
-    fs.writeFile(file, JSON.stringify(results), err => {
-        if (err) throw err;
-        console.log('Results saved to ' + file);
-    });
-    
+        // Save it a JSON
+        file = 'releases.json';
+        fs.writeFile(file, JSON.stringify(results), err => {
+            if (err) throw err;
+            console.log('Results saved to ' + file);
+        });
+    }    
     })
     .catch(err => console.error(err));
 }
 
 // Make a request
-makeRequest('f1a3fb4a-fff6-4556-a290-3704b109da90');
+for (const artistID of artistsID) {
+    //const artistID = artistsID[index];
+    console.log(artistID)
+    makeRequest(artistID);
+  }
