@@ -6,12 +6,9 @@ const url = 'https://musicbrainz.org/ws/2/release';
 
 // Params of the query
 let params = {
-  query: 'type:release',
-  limit: 10,
-  fmt: 'json',
-  //fields: 'id, title, date, country, text, representation.language'
-  fields: 'id,title,artist-credit.name,release-events.date', 
-  artist : null
+    artist: null,
+    fmt: 'json',
+    fields: 'id,title,date,country,text-representation.language'
 };
 
 // Create an empty array to store all the results
@@ -19,9 +16,9 @@ let results = [];
 
 function makeRequest(idArtist) {
   params.artist = idArtist;
+  console.log(params)
   
-  fetch(`https://musicbrainz.org/ws/2/release?artist=${idArtist}&fmt=json&fields=id+title+date+country+text-representation.language`, {
-  //await fetch(`https://musicbrainz.org/ws/2/release?artist=${idArtist}&fmt=json&fields=id+title+date+country+text-representation.language`,{
+  fetch(url + "?" + new URLSearchParams(params), {
     headers: {
       'Accept': 'application/json'
     }
