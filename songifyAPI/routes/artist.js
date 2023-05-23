@@ -52,8 +52,11 @@ router.get('/', async (req, res) => {
  */
 //code
 
-//Get /artist/{id}
-//Conexión a MongoDB que devuelve un artista a partir de un id
+/**
+ * Get /artist/{id}
+ * Conexión a MongoDB que devuelve un artista a partir de un id
+ * TODO: get
+ */
 router.get("/:id", async function (req, res, next) {
   const dbConnect = dbo.getDb();
   let query = {_id: new ObjectId(req.params.id)};
@@ -68,8 +71,11 @@ router.get("/:id", async function (req, res, next) {
 
 });
 
-//Put /artist/{id}
-//Conexión a MongoDB que modifica(actualiza) un artista a partir de un id
+/**
+ * Put /artist/{id}
+ * Conexión a MongoDB que modifica(actualiza) un artista a partir de un id
+ * TODO: put modificando uno, dos, tres o todos los campos posibles en del artista
+ */
 //Pasarle como parametro el id de la bbdd
 router.put("/:id", async function (req, res, next) {
 
@@ -94,8 +100,11 @@ router.put("/:id", async function (req, res, next) {
  */
 //code
 
-//Get /artist/{id}/release
-//Conexión a MongoDB que devuelve los álbumes de un artista concreto
+/**
+ * Get /artist/{id}/release
+ * Conexión a MongoDB que devuelve los álbumes de un artista concreto
+ * TODO: get
+ */
 router.get('/:id/release', async (req, res) => {
   let limit = MAX_RESULTS;
   if (req.query.limit) {
@@ -126,8 +135,11 @@ router.get('/:id/release', async (req, res) => {
  */
 //code
 
-//Get /artist/{id}/release/{id}
-//Conexión a MongoDB que devuelve el álbum de un artista
+/**
+ * Get /artist/{id}/release/{id}
+ * Conexión a MongoDB que devuelve el álbum de un artista
+ * TODO: get
+ */
 //646d083ddc30ca567f175175
 router.get("/:id/release/:idRelease", async function (req, res, next) {
   const dbConnect = dbo.getDb();
@@ -142,8 +154,11 @@ router.get("/:id/release/:idRelease", async function (req, res, next) {
   }
 });
 
-//Put /artist/{id}/release/{id}
-//Conexión a MongoDB que modifica(actualiza) el álbum de un artista
+/**
+ * Put /artist/{id}/release/{id}
+ * Conexión a MongoDB que modifica(actualiza) el álbum de un artista
+ * TODO: put modificando uno, dos, tres o todos los campos posibles del álbum
+ */
 //646d083ddc30ca567f175175
 router.put("/:id/release/:idRelease", async function (req, res, next) {
   const query = {_id: new ObjectId(req.params.idRelease)};
@@ -159,8 +174,11 @@ router.put("/:id/release/:idRelease", async function (req, res, next) {
   res.status(200).send(result);
 });
 
-//Delete /artist/{id}/release/{id}
-//Conexión a MongoDB que borra un álbum de un artista
+/**
+ * Delete /artist/{id}/release/{id}
+ * Conexión a MongoDB que borra un álbum de un artista
+ * TODO: delete
+ */
 //646d083ddc30ca567f175175
 router.delete("/:id/release/:idRelease", async function (req, res, next) {
   const query = { _id: new ObjectId(req.params.idRelease) };
