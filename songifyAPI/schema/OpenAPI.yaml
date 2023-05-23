@@ -495,8 +495,19 @@ components:
       required: true
       schema:
         $ref: "#/components/schemas/id"
+    id_artist:
+      description: Unique identifier for a resource's artist
+      name: id
+      in: path
+      required: true
+      schema:
+        $ref: "#/components/schemas/id_artist"
   schemas: 
     id: 
+      type: integer
+      minimum: 1
+      example: 1
+    id_artist: 
       type: integer
       minimum: 1
       example: 1
@@ -590,24 +601,20 @@ components:
         $ref: "#/components/schemas/release"
       example: [
         {
-        "id": 1,
-        "title": "Parachutes",
-        "artist": "Coldplay",
-        "date": "2000-07-10",
-        "country": "United Kingdom",
-        "label": "Parlophone",  
-        "language": "en",
-        "url_recording": "https://localhost/api/v3/artist/1/release/1/recording"
-        }, 
+        "id": "03082446-54ca-4f5f-a0a8-a19fa918be9b",
+        "title": "Harry Potter ja liekehtivä pikari",
+        "date": "2013",
+        "country": "FI",
+        "languague": "fin",
+        "id_artist": "569c0d90-28dd-413b-83e4-aaa7c27e667b"
+        },
         {
-        "id": 2,
-        "title": "A rush of blood to the head",
-        "artist": "Coldplay",
-        "date": "2002-08-26",
-        "country": "United Kingdom",
-        "label": "Parlophone",
-        "language": "en",
-        "url_recording": "https://localhost/api/v3/artist/1/release/2/recording"
+        "id": "0519cffb-7dd8-4460-8e72-aeb8490184af",
+        "title": "Harry Potter ja salaisuuksien kammio",
+        "date": "2013",
+        "country": "FI",
+        "languague": "fin",
+        "id_artist": "569c0d90-28dd-413b-83e4-aaa7c27e667b"
         }
       ] 
     release_update:
@@ -618,9 +625,6 @@ components:
         title: 
           type: string
           description: Official name of the release
-        artist:
-          type: string
-          description: Official name of the artist, it could be a person or a band
         date: 
           type: string
           format: date
@@ -628,12 +632,11 @@ components:
         country: 
           type: string
           description: Country of the artist's release. Mostly, it is birth/formation country. 
-        label:
-          type: string
-          description: Label which publishes the artist's release
         language: 
           type: string
           description: Official language of the artist's release
+        id_artist:
+          $ref: "#/components/schemas/id_artist"
         url_recording: 
           type: string
           format: uri
@@ -646,24 +649,23 @@ components:
         - required:
           - id
           - title
-          - artist
           - date
           - country
-          - label
           - language
+          - id_artist
           - url_recording
         - $ref: "#/components/schemas/release_update"
       additionalProperties: false
-      example: {
-        "id": 1,
-        "title": "Parachutes",
-        "artist": "Coldplay",
-        "date": "2000-07-10",
-        "country": "United Kingdom",
-        "label": "Parlophone",
-        "language": "en",
-        "url_recording": "https://localhost/api/v3/artist/1/release/1/recording"
+      example:
+        {
+        "id": "03082446-54ca-4f5f-a0a8-a19fa918be9b",
+        "title": "Harry Potter ja liekehtivä pikari",
+        "date": "2013",
+        "country": "FI",
+        "languague": "fin",
+        "id_artist": "569c0d90-28dd-413b-83e4-aaa7c27e667b"
         }
+  
     recordings:
       type: array 
       items:
