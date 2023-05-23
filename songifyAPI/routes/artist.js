@@ -50,7 +50,14 @@ router.get('/', async (req, res) => {
  * Conexión a MongoDB que crea un nuevo artista
  * TODO: post
  */
-//code
+router.post('/', async (req, res) => {
+  const dbConnect = dbo.getDb();
+  console.log(req.body);
+  let result = await dbConnect
+    .collection('artist')
+    .insertOne(req.body);
+  res.status(201).send(result);
+});
 
 /**
  * Get /artist/{id}
