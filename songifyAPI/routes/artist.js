@@ -30,7 +30,7 @@ router.get('/', async (req, res) => {
     //.sort({ _id: -1 })
     .limit(limit)
     .toArray()
-    .catch(err => res.status(400).send('Error to fetch artists'));
+    .catch(err => res.status(500).send('Error to fetch artists'));
   next = results.length == limit ? results[results.length - 1]._id : null;
   res.json({ results, next }).status(200);
 });
