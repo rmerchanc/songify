@@ -21,6 +21,34 @@ router.get('/', async (req, res) => {
   let next = req.query.next;
   let query = {}
   if (next) {
+    query = { _id: { $gt: new ObjectId(next) } } //gt: greater than
+  }
+  const dbConnect = dbo.getDb();
+  let results = await dbConnect
+    .collection('artist')
+    .find(query)
+    //.sort({ _id: -1 }) esto lo ordena en orden descendente
+    .limit(limit)
+    .toArray()
+    .catch(err => res.status(500).send('Error to fetch artists'));
+  next = results.length == limit ? results[results.length - 1]._id : null;
+  res.json({ results, next }).status(200);
+});
+
+
+/**
+ * Get /artist?filtro=:param
+ * Conexión a MongoDB que devuelve todos los artistas filtrando los resultados por...
+ * TODO:  filtro
+ */
+router.get('/', async (req, res) => {
+  let limit = MAX_RESULTS;
+  if (req.query.limit) {
+    limit = Math.min(parseInt(req.query.limit), MAX_RESULTS);
+  }
+  let next = req.query.next;
+  let query = {}
+  if (next) {
     query = { _id: { $gt: new ObjectId(next) } }
   }
   const dbConnect = dbo.getDb();
@@ -37,18 +65,10 @@ router.get('/', async (req, res) => {
 
 
 /**
- * Get /artist?filtro=:param
- * Conexión a MongoDB que devuelve todos los artistas filtrando los resultados por...
- * TODO: paginación
- * TODO:  filtro
- */
-//code
-
-
-/**
  * Post /artist
  * Conexión a MongoDB que crea un nuevo artista
  * TODO: post
+ * EJ: 
  */
 router.post('/', async (req, res) => {
   const dbConnect = dbo.getDb();

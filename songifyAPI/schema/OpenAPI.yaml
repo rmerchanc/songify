@@ -7,7 +7,7 @@ info:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
 servers:
-  - url: https://localhost/api/v3 # de momento el servidor es local
+  - url: https://localhost/api/v1
 externalDocs:
   description: Find out more about Songify
   url: https://github.com/rmerchanc/songify
@@ -71,18 +71,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/error'
-        '401':
-          description: Unauthorized request due to missing credentials 
-          content: 
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error' 
-        '403':
-          description: Fordibben access due to permanent restrictions
-          content: 
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
         '500':
           description: The server encountered an unexpected condition that prevented it from fulfilling the request
           content: 
@@ -140,18 +128,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/error'
-        '401':
-          description: Unauthorized request due to missing credentials 
-          content: 
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error' 
-        '403':
-          description: Fordibben access due to permanent restrictions
-          content: 
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
         '404':
           description: There is no artist with that identifier
           content:
@@ -172,18 +148,6 @@ paths:
       responses: 
         '200': 
           description: All the information provided was successfully deleted for the artist
-        '401':
-          description: Unauthorized request due to missing credentials 
-          content: 
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error' 
-        '403':
-          description: Fordibben access due to permanent restrictions
-          content: 
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
         '404':
           description: There is no artist with that identifier
           content:
@@ -243,18 +207,6 @@ paths:
                 $ref: "#/components/schemas/new_element"
         '400':
           description: Bad request performed by the client due to invalid parameters
-          content: 
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
-        '401':
-          description: Unauthorized request due to missing credentials 
-          content: 
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error' 
-        '403':
-          description: Fordibben access due to permanent restrictions
           content: 
             application/json:
               schema:
@@ -322,18 +274,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/error'
-        '401':
-          description: Unauthorized request due to missing credentials 
-          content: 
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error' 
-        '403':
-          description: Fordibben access due to permanent restrictions
-          content: 
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
         '404':
           description: There is no artist / release with that identifier
           content:
@@ -354,18 +294,6 @@ paths:
       responses: 
         '200': 
           description: All the information provided was successfully deleted for the artist's release
-        '401':
-          description: Unauthorized request due to missing credentials 
-          content: 
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error' 
-        '403':
-          description: Fordibben access due to permanent restrictions
-          content: 
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
         '404':
           description: There is no artist / release with that identifier
           content:
@@ -495,45 +423,33 @@ components:
       required: true
       schema:
         $ref: "#/components/schemas/id"
-    id_artist:
-      description: Unique identifier for a resource's artist
-      name: id
-      in: path
-      required: true
-      schema:
-        $ref: "#/components/schemas/id_artist"
   schemas: 
     id: 
-      type: integer
-      minimum: 1
-      example: 1
-    id_artist: 
-      type: integer
-      minimum: 1
-      example: 1
+      type: string
+      example: "6453d52160ce38b9336a3599"
     artists: 
       type: array
       items: 
         $ref: "#/components/schemas/artist"
-      example: [
+      example: [ # Modificar ejemplos: hace fata poner el id del mongo, y también referenciar el id del mongo en 'url_release'
         {
-        "id": 1,
-        "name": "Coldplay",
-        "type": "Group",
-        "area": "United Kingdom",
-        "begin_date": "1996-09",
-        "url_release": "https://localhost/api/v3/artist/1/release",
-        "url_recording": "https://localhost/api/v3/artist/1/recording"
+        "id": "e1d521ea-5b97-4981-987c-ba988b2a87d7",
+        "type": "Person",
+        "name": "Erik Satie",
+        "gender": "male",
+        "area": "France",
+        "begin": "1866-05-17",
+        "end": "1925-07-01",
+        "url_release": "https://localhost/api/v1/artist/1/release"
         }, 
         {
-        "id": 2,
-        "name": "John Williams",
+        "id": "e928d534-ce5b-436f-9186-598f9e7baa1f",
         "type": "Person",
-        "gender": "Male",
-        "area": "Australia",
-        "begin_date": "1941-04-24",
-        "url_release": "https://localhost/api/v3/artist/2/release",
-        "url_recording": "https://localhost/api/v3/artist/2/recording"
+        "name": "Heino",
+        "gender": "male",
+        "area": "Germany",
+        "begin": "1938-12-13"
+        "url_release": "https://localhost/api/v1/artist/2/release"
         }
       ]
     artist_update:
@@ -599,7 +515,7 @@ components:
       type: array
       items: 
         $ref: "#/components/schemas/release"
-      example: [
+      example: [ # no tiene url, falta id de mongo
         {
         "id": "03082446-54ca-4f5f-a0a8-a19fa918be9b",
         "title": "Harry Potter ja liekehtivä pikari",
@@ -670,26 +586,27 @@ components:
       type: array 
       items:
         $ref: "#/components/schemas/recording"
-      example: [{
-        "id": 1,
-        "title": "[Mamma Mia] Dancing Queen",
-        "length": "4:00"
-        },{
-        "id": 2,
-        "title": "Into the Blue",
-        "length": "5:34"
-        }]             
+      example: [    {
+        "id_recordig": "3b8dd486-cb51-4c9b-9c83-9d6e4f25144a",
+        "title": "'til Kingdom Come",
+        "length": "4:24"
+      },
+      {
+        "id_recordig": "eb4a55da-cfa9-4211-ad14-e1419e1ccb18",
+        "title": "'til Kingdom Come",
+        "length": "5:24"
+      }]             
     recording:
       - required:
         - id
         - title
         - length
       example: {
-        "id": 1,
-        "title": "[Mamma Mia] Dancing Queen",
-        "length": "4:00"
-      } 
-    new_element:
+      "id": "4385f49f-46b4-42c3-a0a0-054f2b426880",
+      "title": "(Chris chat #2)",
+      "length": "2:3"
+      }
+    new_element: # ejemplo mal el id
       type: object
       properties:
         id:
@@ -700,19 +617,17 @@ components:
           format: uri
       example: {
         "id": 1,
-        "url": "https://localhost/api/v3/artist/1"
+        "url": "https://localhost/api/v1/artist/1"
       }
     error:
       type: object
       properties:
         error:
           type: string
-          enum: ["Bad request", "Unauthorized", "Fordibben", "Not Found", "Internal Server Error"]
+          enum: ["Bad request", "Not Found", "Internal Server Error"]
         mensaje: 
           type: string
           enum: ["Bad request performed by the client due to invalid parameters", 
-                 "Unauthorized request due to missing credentials", 
-                 "Fordibben access due to permanent restrictions",
                  "The specified resource was not found", 
                  "The server encountered an unexpected condition that prevented it from fulfilling the request"]
       required:
