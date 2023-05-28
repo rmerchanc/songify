@@ -33,6 +33,15 @@ router.get('/', async (req, res) => {
     .toArray()
     .catch(err => res.status(500).send('Error to fetch artists'));
   next = results.length == limit ? results[results.length - 1]._id : null;
+  results.forEach((result) =>{
+    try{
+      result.url_release = result.id;
+    }
+    catch(error){
+      console.log(error,message)
+    }
+    
+  });
   res.json({ results, next }).status(200);
 });
 
