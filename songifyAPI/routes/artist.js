@@ -2,17 +2,17 @@ var express = require("express");
 var router = express.Router();
 const fetch = require("node-fetch");
 const dbo = require('../db/conn');
-//const ObjectId = require('mongodb').ObjectId;
 const { ObjectId } = require('mongodb');
-const MAX_RESULTS = parseInt(process.env.MAX_RESULTS);
 const xml2js = require('xml2js');
 const axios = require("axios")
+const MAX_RESULTS = parseInt(process.env.MAX_RESULTS);
+const url = "localhost:" + process.env.PORT + process.env.BASE_URI
 
 
 /**
  * Get /artist
  * Conexión a MongoDB que devuelve todos los artistas
- * TODO: paginación
+ * TODO: filtro
  */
 router.get('/', async (req, res) => {
   let limit = MAX_RESULTS;
@@ -22,25 +22,18 @@ router.get('/', async (req, res) => {
   let next = req.query.next;
   let query = {}
   if (next) {
-    query = { _id: { $gt: new ObjectId(next) } } //gt: greater than
+    query = { _id: { $gt: new ObjectId(next) } }
   }
   const dbConnect = dbo.getDb();
   let results = await dbConnect
     .collection('artist')
     .find(query)
-    //.sort({ _id: -1 }) esto lo ordena en orden descendente
     .limit(limit)
     .toArray()
     .catch(err => res.status(500).send('Error to fetch artists'));
   next = results.length == limit ? results[results.length - 1]._id : null;
   results.forEach((result) =>{
-    try{
-      result.url_release = result.id;
-    }
-    catch(error){
-      console.log(error,message)
-    }
-    
+      result.url_release = url + `/artist/${result._id}/release`;  
   });
   res.json({ results, next }).status(200);
 });
