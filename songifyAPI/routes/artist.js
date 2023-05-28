@@ -166,15 +166,23 @@ router.get('/:id/release', async (req, res) => {
     limit = Math.min(parseInt(req.query.limit), MAX_RESULTS);
   }
   let next = req.query.next;
-  let query = {}
   if (next) {
-    query = { _id: { $lt: new ObjectId(next) } }
+    query = { _id: { $gt: new ObjectId(next) } };
   }
   const dbConnect = dbo.getDb();
+  //Recuperar el id del artista
+  let query_id_artist = { _id: new ObjectId(req.params.id)};
+  let id_artist = await dbConnect
+    .collection('artist')
+    .find(query_id_artist)
+    .project({id: 1})
+    .toArray()
+  console.log("The artist ID is " + id_artist[0].id)
+  let query = { id_artist: id_artist[0].id};
+  // Recuperar los álbumes
   let results = await dbConnect
     .collection('release')
     .find(query)
-    .sort({ _id: -1 })
     .limit(limit)
     .toArray()
     .catch(err => res.status(400).send('Error to fetch artists'));
