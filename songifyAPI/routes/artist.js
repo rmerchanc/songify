@@ -2,7 +2,8 @@ var express = require("express");
 var router = express.Router();
 const fetch = require("node-fetch");
 const dbo = require('../db/conn');
-const ObjectId = require('mongodb').ObjectId;
+//const ObjectId = require('mongodb').ObjectId;
+const { ObjectId } = require('mongodb');
 const MAX_RESULTS = parseInt(process.env.MAX_RESULTS);
 const xml2js = require('xml2js');
 const axios = require("axios")
@@ -125,7 +126,32 @@ router.put("/:id", async function (req, res, next) {
  * Conexión a MongoDB que borra un artista a partir de un id
  * TODO: delete
  */
-//code
+router.delete('/:id', async function (req, res, next) {
+  const artistId = req.params.id;
+  const db = dbo.getDb();
+
+  try {
+    // Get the artist's id
+    const artist = await db.collection('artist').findOne({ _id: new ObjectId(artistId) });
+    const artistApiId = artist.id;
+
+    // Delete artist
+    const artistResult = await db.collection('artist').deleteOne({ _id: new ObjectId(artistId) });
+
+    if (artistResult.deletedCount > 0) {
+      // Delete associated releases
+      const releasesResult = await db.collection('release').deleteMany({ id_artist: artistApiId });
+
+      res.status(200).json({ message: 'Artist and associated releases deleted successfully' });
+    } else {
+      res.status(404).json({ error: 'Artist not found' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'An error occurred while deleting the artist and associated releases' });
+  }
+});
+
 
 /**
  * Get /artist/{id}/release
