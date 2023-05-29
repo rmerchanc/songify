@@ -161,16 +161,13 @@ router.delete('/:id', async function (req, res, next) {
  * TODO: get
  */
 router.get('/:id/release', async (req, res) => {
+  // Establecer el límite
   let limit = MAX_RESULTS;
   if (req.query.limit) {
     limit = Math.min(parseInt(req.query.limit), MAX_RESULTS);
   }
-  let next = req.query.next;
-  if (next) {
-    query = { _id: { $gt: new ObjectId(next) } };
-  }
   const dbConnect = dbo.getDb();
-  //Recuperar el id del artista
+  // Recuperar el id del artista
   let query_id_artist = { _id: new ObjectId(req.params.id)};
   let id_artist = await dbConnect
     .collection('artist')
@@ -179,6 +176,12 @@ router.get('/:id/release', async (req, res) => {
     .toArray()
   console.log("The artist ID is " + id_artist[0].id)
   let query = { id_artist: id_artist[0].id};
+  // Establecer next si hay
+  let next = req.query.next;
+  if (next) {
+    query = { id_artist: id_artist[0].id , _id: { $gt: new ObjectId(next) } };
+  }
+  //console.log(query);
   // Recuperar los álbumes
   let results = await dbConnect
     .collection('release')
