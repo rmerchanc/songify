@@ -4,7 +4,8 @@ const fetch = require("node-fetch");
 const dbo = require('../db/conn');
 const { ObjectId } = require('mongodb');
 const xml2js = require('xml2js');
-const axios = require("axios")
+const axios = require("axios");
+const xmlbuilder = require('xmlbuilder');
 const MAX_RESULTS = parseInt(process.env.MAX_RESULTS);
 const url = "localhost:" + process.env.PORT + process.env.BASE_URI
 
@@ -191,7 +192,12 @@ router.get('/:id/release', async (req, res) => {
     .toArray()
     .catch(err => res.status(500).send("The server encountered an unexpected condition that prevented it from fulfilling the request"));
   next = results.length == limit ? results[results.length - 1]._id : null;
-  res.json({ results, next }).status(200);
+  // Convertirlo a XML
+  results_xml = convertXML(results, next.toString())
+  //console.log(results_xml)
+  res.set('Content-Type', 'application/xml');
+  res.status(200).send(results_xml);
+  //res.json({ results, next }).status(200);
 });
 
 
@@ -415,6 +421,34 @@ function tiempo(tiempo) {
   const seg = (segundos % 60);
 
   return `${minutos}:${seg}`
+}
+
+/**
+ * Función para crear un XML con un JSON
+ */
+function convertXML(results, next){
+  // Build XML structure
+  let xml = xmlbuilder.create('response');
+  let resultsNode = xml.ele('results');
+
+  results.forEach(result => {
+    let resultNode = resultsNode.ele('result');
+    // Add properties to the resultNode based on your data structure
+    //console.log(result);
+    resultNode.ele('_id', result._id.toString());
+    resultNode.ele('id', result.id);
+    resultNode.ele('title', result.title);
+    resultNode.ele('date', result.date);
+    resultNode.ele('country', result.country);
+    resultNode.ele('language', result.language);
+    resultNode.ele('id_artist', result.id_artist);
+  });
+
+  xml.ele('next', next);
+
+  // Convert XML to string
+  let xmlString = xml.end({ pretty: true });
+  return xmlString
 }
 
 module.exports = router;
