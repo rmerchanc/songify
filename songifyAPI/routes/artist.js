@@ -145,7 +145,7 @@ router.delete('/:id', async function (req, res, next) {
       // Delete associated releases
       const releasesResult = await db.collection('release').deleteMany({ id_artist: artistApiId });
 
-      res.status(200).json({ message: 'Artist and associated releases deleted successfully' });
+      res.status(200).json({ message: 'Artist and associated releases deleted successfully', deletedCount: artistResult.deletedCount, deletedCountReleases: releasesResult.deletedCount });
     } else {
       res.status(404).json({ error: 'Artist not found' });
     }
