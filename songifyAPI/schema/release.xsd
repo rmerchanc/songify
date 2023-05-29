@@ -1,0 +1,27 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="response">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="results">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="result">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="_id" type="xs:string"></xs:element>
+                                        <xs:element name="id" type="xs:string"></xs:element>
+                                        <xs:element name="title" type="xs:string"></xs:element>
+                                        <xs:element name="date" type="xs:string"></xs:element>
+                                        <xs:element name="country" type="xs:string"></xs:element>
+                                        <xs:element name="language" type="xs:string"></xs:element>
+                                        <xs:element name="id_artist" type="xs:string"></xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

@@ -8,7 +8,8 @@ const axios = require("axios");
 const xmlbuilder = require('xmlbuilder');
 const MAX_RESULTS = parseInt(process.env.MAX_RESULTS);
 const url = "localhost:" + process.env.PORT + process.env.BASE_URI
-
+const fs = require('fs');
+const { XMLParser, XMLBuilder, XMLValidator } = require('fast-xml-parser');
 
 /**
  * Get /artist
@@ -196,8 +197,11 @@ router.get('/:id/release', async (req, res) => {
       next = results.length == limit ? results[results.length - 1]._id : null;
       // Convertirlo a XML
       results_xml = convertXML(results, next.toString())
-      res.set('Content-Type', 'application/xml');
-      res.status(200).send(results_xml);
+      bool = validateXML(results_xml);
+      if (bool){
+        res.set('Content-Type', 'application/xml');
+        res.status(200).send(results_xml);
+      }
     }
     catch(error){
       res.status(500).send("The server encountered an unexpected condition that prevented it from fulfilling the request");
@@ -457,5 +461,43 @@ function convertXML(results, next){
   let xmlString = xml.end({ pretty: true });
   return xmlString
 }
+
+/**
+ * Función para validar un XML
+ */
+
+function validateXML(xml_to_validate){
+  const xsdPath = './schema/release.xsd';
+
+  // Read the XSD schema file
+  const xsdContent = fs.readFileSync(xsdPath, 'utf8');
+  console.log(xsdContent);
+
+  // Configure the XMLValidator with the XSD schema
+  const validator = new XMLValidator({
+    xsd: {
+      filePath: xsdPath,
+      content: xsdContent,
+    },
+  });
+
+  console.log("Hola");
+  // Parse the XML using the XMLParser
+  const jsonObj = XMLParser.parse(xml_to_validate, {
+    attributeNamePrefix: '',
+    ignoreAttributes: false,
+  });
+
+  // Validate the parsed XML against the XSD schema
+  const isValid = validator.validate(jsonObj);
+
+  if (isValid) {
+    console.log('XML is valid.');
+  } else {
+    console.log('XML is invalid.');
+    console.log('Validation errors:', validator.validationErrors);
+  }
+}
+
 
 module.exports = router;
