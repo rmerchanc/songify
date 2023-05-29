@@ -213,7 +213,40 @@ router.get('/:id/release', async (req, res) => {
  * Conexión a MongoDB que crea un nuevo álbum para un artista
  * TODO: post
  */
-//code
+router.post('/:id/release', async (req, res, next) => {
+  try {
+    const artistId = req.params.id;
+    const releaseData = req.body; 
+
+    const db = dbo.getDb();
+
+    // Check if the artist exists
+    const artist = await db.collection('artist').findOne({ _id: new ObjectId(artistId) });
+
+    if (!artist) {
+      return res.status(404).json({ error: 'Artist not found' });
+    }
+
+    // Associate the release with the artist
+    const release = {
+      id: releaseData.id,
+      title: releaseData.title,
+      date: releaseData.date,
+      country: releaseData.country,
+      language: releaseData.language,
+      id_artist: artist.id
+    };
+
+    // Insert the release into the database
+    const result = await db.collection('release').insertOne(release);
+
+    res.status(201).json({ message: 'Release created successfully', releaseId: result.insertedId });
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({ error: 'An error occurred while creating the release' });
+  }
+});
+
 
 /**
  * Get /artist/{id}/release/{id}
