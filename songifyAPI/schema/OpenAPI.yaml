@@ -521,7 +521,7 @@ components:
         "title": "Harry Potter ja liekehtivä pikari",
         "date": "2013",
         "country": "FI",
-        "languague": "fin",
+        "language": "fin",
         "id_artist": "569c0d90-28dd-413b-83e4-aaa7c27e667b"
         },
         {
@@ -529,7 +529,7 @@ components:
         "title": "Harry Potter ja salaisuuksien kammio",
         "date": "2013",
         "country": "FI",
-        "languague": "fin",
+        "language": "fin",
         "id_artist": "569c0d90-28dd-413b-83e4-aaa7c27e667b"
         }
       ] 
@@ -578,7 +578,7 @@ components:
         "title": "Harry Potter ja liekehtivä pikari",
         "date": "2013",
         "country": "FI",
-        "languague": "fin",
+        "language": "fin",
         "id_artist": "569c0d90-28dd-413b-83e4-aaa7c27e667b"
         }
   

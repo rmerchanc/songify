@@ -33,7 +33,7 @@ function makeRequest(idArtist) {
             title: release.title,
             date: release['release-events'][0].date,
             country: release.country,
-            languague: release['text-representation'].language
+            language: release['text-representation'].language
         }));
         // Save the results into the array
         results = results.concat(releases);
