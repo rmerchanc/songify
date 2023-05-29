@@ -61,7 +61,7 @@ router.get('/', async (req, res) => {
     //.sort({ _id: -1 })
     .limit(limit)
     .toArray()
-    .catch(err => res.status(500).send('Error to fetch artists'));
+    .catch(err => res.status(500).send('The server encountered an unexpected condition that prevented it from fulfilling the request'));
   next = results.length == limit ? results[results.length - 1]._id : null;
   res.json({ results, next }).status(200);
 });
@@ -174,7 +174,8 @@ router.get('/:id/release', async (req, res) => {
     .find(query_id_artist)
     .project({id: 1})
     .toArray()
-  console.log("The artist ID is " + id_artist[0].id)
+    .catch(err => res.status(404).send("The specified resource was not found"));
+  console.log("The artist ID is " + id_artist[0].id);
   let query = { id_artist: id_artist[0].id};
   // Establecer next si hay
   let next = req.query.next;
@@ -188,7 +189,7 @@ router.get('/:id/release', async (req, res) => {
     .find(query)
     .limit(limit)
     .toArray()
-    .catch(err => res.status(400).send('Error to fetch artists'));
+    .catch(err => res.status(500).send("The server encountered an unexpected condition that prevented it from fulfilling the request"));
   next = results.length == limit ? results[results.length - 1]._id : null;
   res.json({ results, next }).status(200);
 });
