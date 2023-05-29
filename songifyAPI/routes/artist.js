@@ -162,42 +162,49 @@ router.delete('/:id', async function (req, res, next) {
  * TODO: get
  */
 router.get('/:id/release', async (req, res) => {
+  let query = {}
+  const dbConnect = dbo.getDb();
   // Establecer el límite
   let limit = MAX_RESULTS;
   if (req.query.limit) {
     limit = Math.min(parseInt(req.query.limit), MAX_RESULTS);
   }
-  const dbConnect = dbo.getDb();
   // Recuperar el id del artista
   let query_id_artist = { _id: new ObjectId(req.params.id)};
-  let id_artist = await dbConnect
-    .collection('artist')
-    .find(query_id_artist)
-    .project({id: 1})
-    .toArray()
-    .catch(err => res.status(404).send("The specified resource was not found"));
-  console.log("The artist ID is " + id_artist[0].id);
-  let query = { id_artist: id_artist[0].id};
-  // Establecer next si hay
-  let next = req.query.next;
-  if (next) {
-    query = { id_artist: id_artist[0].id , _id: { $gt: new ObjectId(next) } };
+  try {
+    let id_artist = await dbConnect
+      .collection('artist')
+      .find(query_id_artist)
+      .project({id: 1})
+      .toArray()
+    console.log("The artist ID is " + id_artist[0].id);
+    query = { id_artist: id_artist[0].id};
+    
+    // Establecer el parámetro next
+    let next = req.query.next;
+    if (next) {
+      query = { id_artist: id_artist[0].id , _id: { $gt: new ObjectId(next) } };
+    }
+    
+    // Recuperar los álbumes
+    try {
+      let results = await dbConnect
+        .collection('release')
+        .find(query)
+        .limit(limit)
+        .toArray()
+      next = results.length == limit ? results[results.length - 1]._id : null;
+      // Convertirlo a XML
+      results_xml = convertXML(results, next.toString())
+      res.set('Content-Type', 'application/xml');
+      res.status(200).send(results_xml);
+    }
+    catch(error){
+      res.status(500).send("The server encountered an unexpected condition that prevented it from fulfilling the request");
+    }
+  }catch(error){
+    res.status(404).send("The specified resource was not found");
   }
-  //console.log(query);
-  // Recuperar los álbumes
-  let results = await dbConnect
-    .collection('release')
-    .find(query)
-    .limit(limit)
-    .toArray()
-    .catch(err => res.status(500).send("The server encountered an unexpected condition that prevented it from fulfilling the request"));
-  next = results.length == limit ? results[results.length - 1]._id : null;
-  // Convertirlo a XML
-  results_xml = convertXML(results, next.toString())
-  //console.log(results_xml)
-  res.set('Content-Type', 'application/xml');
-  res.status(200).send(results_xml);
-  //res.json({ results, next }).status(200);
 });
 
 
