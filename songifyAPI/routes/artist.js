@@ -14,16 +14,27 @@ const ajv = new Ajv();
 /**
  * Get /artist
  * Conexión a MongoDB que devuelve todos los artistas
- * TODO: filtro
  */
 router.get('/', async (req, res) => {
+  const param = req.query.gender;
   let limit = MAX_RESULTS;
   if (req.query.limit) {
     limit = Math.min(parseInt(req.query.limit), MAX_RESULTS);
   }
   let next = req.query.next;
   let query = {}
-  if (next) {
+  console.log("param"+param);
+  console.log("next" + next);
+
+  if (next !== undefined && param !== undefined){
+    if ((next.length>1) && (param.length>1)){
+      query = {$and:[{_id: { $gt: new ObjectId(next) }}, {"gender": param} ]}
+    }
+  }
+  else if (param){
+    query = {"gender": param}
+  }
+  else if (next) {
     query = { _id: { $gt: new ObjectId(next) } }
   }
   const dbConnect = dbo.getDb();
@@ -40,33 +51,6 @@ router.get('/', async (req, res) => {
   res.json({ results, next }).status(200);
 });
 
-
-/**
- * Get /artist?filtro=:param
- * Conexión a MongoDB que devuelve todos los artistas filtrando los resultados por...
- * TODO:  filtro
- */
-router.get('/', async (req, res) => {
-  let limit = MAX_RESULTS;
-  if (req.query.limit) {
-    limit = Math.min(parseInt(req.query.limit), MAX_RESULTS);
-  }
-  let next = req.query.next;
-  let query = {}
-  if (next) {
-    query = { _id: { $gt: new ObjectId(next) } }
-  }
-  const dbConnect = dbo.getDb();
-  let results = await dbConnect
-    .collection('artist')
-    .find(query)
-    //.sort({ _id: -1 })
-    .limit(limit)
-    .toArray()
-    .catch(err => res.status(500).send('The server encountered an unexpected condition that prevented it from fulfilling the request'));
-  next = results.length == limit ? results[results.length - 1]._id : null;
-  res.json({ results, next }).status(200);
-});
 
 const schemaPOSTArtista = {
   "type": "object",
