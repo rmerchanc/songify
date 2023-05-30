@@ -315,20 +315,40 @@ router.get("/:id/release/:idRelease", async function (req, res, next) {
  * Conexión a MongoDB que modifica(actualiza) el álbum de un artista
  * TODO: put modificando uno, dos, tres o todos los campos posibles del álbum
  */
-//646d083ddc30ca567f175175
+
 router.put("/:id/release/:idRelease", async function (req, res, next) {
-  const query = {_id: new ObjectId(req.params.idRelease)};
-  const update = {$set:{
-    title: req.body.title,
-    date: req.body.date,
-    country: req.body.country
-  }};
+  const query = { _id: new ObjectId(req.params.id) };
+  const update = {
+    $set: {
+      title: req.body.title,
+      date: req.body.date,
+      country: req.body.country,
+      language: req.body.language
+    }
+  };
   const dbConnect = dbo.getDb();
   let result = await dbConnect
     .collection('release')
     .updateOne(query, update);
-  res.status(200).send(result);
+  const error = validarJSON(req.body, schemaPUTRelease);
+  if (!result) {
+    res.send("Not found").status(404);
+  } else {
+    res.status(200).send(result);
+  }
 });
+
+const schemaPUTRelease = {
+  "type": "object",
+  "properties": {
+    "title": { "type": "string" },
+    "date": { "type": "string" },
+    "country": { "type": "string" },
+    "language": { "type": "string" }
+  },
+  "required": ["title", "date", "country", "language"]
+}
+
 
 /**
  * Delete /artist/{id}/release/{id}
