@@ -46,7 +46,7 @@ router.get('/', async (req, res) => {
   results.forEach((result) =>{
       result.url_release = url + `/artist/${result._id}/release`;  
   });
-  if ((param !== "male") && (param !== "female")){
+  if (!results || results.length == 0){
     res.send("Not Found").status(404);
   }
   else{
@@ -108,15 +108,21 @@ router.post('/', async (req, res) => {
  * TODO: get
  */
 router.get("/:id", async function (req, res, next) {
+  try{
   const dbConnect = dbo.getDb();
   let query = {_id: new ObjectId(req.params.id)};
   let result = await dbConnect
     .collection('artist')
-    .findOne(query);
-  if (!result){
-    res.send("Not found").status(404);
-  } else {
-    res.status(200).send(result);
+    .findOne(query)
+  
+    if (!result){
+      res.send("Not found").status(404);
+    } else {
+      res.status(200).send(result);
+    }
+  }
+  catch (error){
+    res.status(500).send('Error to fetch artist')
   }
 
 });
