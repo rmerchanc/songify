@@ -23,8 +23,6 @@ router.get('/', async (req, res) => {
   }
   let next = req.query.next;
   let query = {}
-  console.log("param"+param);
-  console.log("next" + next);
 
   if (next !== undefined && param !== undefined){
     if ((next.length>1) && (param.length>1)){
@@ -48,7 +46,12 @@ router.get('/', async (req, res) => {
   results.forEach((result) =>{
       result.url_release = url + `/artist/${result._id}/release`;  
   });
-  res.json({ results, next }).status(200);
+  if ((param !== "male") && (param !== "female")){
+    res.send("Not Found").status(404);
+  }
+  else{
+    res.json({ results, next }).status(200);
+  }
 });
 
 
