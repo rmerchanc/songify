@@ -8,7 +8,8 @@ const axios = require("axios");
 const xmlbuilder = require('xmlbuilder');
 const MAX_RESULTS = parseInt(process.env.MAX_RESULTS);
 const url = "localhost:" + process.env.PORT + process.env.BASE_URI
-
+const Ajv = require('ajv');
+const ajv = new Ajv();
 
 /**
  * Get /artist
@@ -67,6 +68,32 @@ router.get('/', async (req, res) => {
   res.json({ results, next }).status(200);
 });
 
+const schemaPOSTArtista = {
+  "type": "object",
+  "properties": {
+    "type": { "type": "string" },
+    "name": { "type": "string" },
+    "gender": { "type": "string" },
+    "area": { "type": "string" },
+    "begin": { "type": "string" },
+    "end": { "type": "string" }
+  },
+  "required": ["type", "name", "gender", "area", "begin", "end"]
+}
+
+function validarJSON(json, schema) {
+  const validar = ajv.compile(schema);
+  console.log(validar)
+  const valido = validar(json);
+  console.log(valido)
+
+  if (!valido) {
+    return validar.errors;
+  }
+
+  return null;
+}
+
 
 /**
  * Post /artist
@@ -80,7 +107,12 @@ router.post('/', async (req, res) => {
   let result = await dbConnect
     .collection('artist')
     .insertOne(req.body);
-  res.status(201).send(result);
+  const error = validarJSON(req.body, schemaPOSTArtista);
+  if (error) {
+    res.send("Bad request performed by the client due to invalid parameters").status(400);
+  } else {
+    res.status(201).send(result);
+  }
 });
 
 /**
@@ -102,6 +134,19 @@ router.get("/:id", async function (req, res, next) {
 
 });
 
+const schemaPUTTArtista = {
+  "type": "object",
+  "properties": {
+    "type": { "type": "string" },
+    "name": { "type": "string" },
+    "gender": { "type": "string" },
+    "area": { "type": "string" },
+    "begin": { "type": "string" },
+    "end": { "type": "string" }
+  },
+  "required": ["name"]
+}
+
 /**
  * Put /artist/{id}
  * Conexión a MongoDB que modifica(actualiza) un artista a partir de un id
@@ -109,18 +154,23 @@ router.get("/:id", async function (req, res, next) {
  */
 //Pasarle como parametro el id de la bbdd
 router.put("/:id", async function (req, res, next) {
-
-  const query = {_id: new ObjectId(req.params.id)};
-  const update = {$set:{ 
-    type: req.body.type,
-    name: req.body.name,
-  }};
-  const dbConnect = dbo.getDb();
-  let result = await dbConnect
-    .collection('artist')
-    .updateOne(query, update);
-  res.status(200).send(result);
-
+    const query = { _id: new ObjectId(req.params.id) };
+    const update = {
+      $set: {
+        type: req.body.type,
+        name: req.body.name,
+      }
+    };
+    const dbConnect = dbo.getDb();
+    let result = await dbConnect
+      .collection('artist')
+      .updateOne(query, update);
+    const error = validarJSON(req.body, schemaPUTTArtista);
+    if (!result) {
+      res.send("Not found").status(404);
+    } else {
+      res.status(200).send(result);
+    }
 });
 
 
