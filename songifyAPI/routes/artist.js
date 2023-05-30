@@ -58,6 +58,7 @@ router.get('/', async (req, res) => {
 const schemaPOSTArtista = {
   "type": "object",
   "properties": {
+    "id": { "type": "string"},
     "type": { "type": "string" },
     "name": { "type": "string" },
     "gender": { "type": "string" },
@@ -65,7 +66,7 @@ const schemaPOSTArtista = {
     "begin": { "type": "string" },
     "end": { "type": "string" }
   },
-  "required": ["type", "name", "gender", "area", "begin", "end"]
+  "required": ["id", "type", "name", "gender", "area", "begin"]
 }
 
 function validarJSON(json, schema) {
@@ -85,8 +86,6 @@ function validarJSON(json, schema) {
 /**
  * Post /artist
  * Conexión a MongoDB que crea un nuevo artista
- * TODO: post
- * EJ: 
  */
 router.post('/', async (req, res) => {
   const dbConnect = dbo.getDb();
@@ -105,7 +104,6 @@ router.post('/', async (req, res) => {
 /**
  * Get /artist/{id}
  * Conexión a MongoDB que devuelve un artista a partir de un id
- * TODO: get
  */
 router.get("/:id", async function (req, res, next) {
   try{
@@ -114,7 +112,7 @@ router.get("/:id", async function (req, res, next) {
   let result = await dbConnect
     .collection('artist')
     .findOne(query)
-  
+  result.url_release = url + `/artist/${result._id}/release`;    
     if (!result){
       res.send("Not found").status(404);
     } else {
@@ -137,21 +135,19 @@ const schemaPUTTArtista = {
     "begin": { "type": "string" },
     "end": { "type": "string" }
   },
-  "required": ["name"]
+  "required": ["name", "area"]
 }
 
 /**
  * Put /artist/{id}
  * Conexión a MongoDB que modifica(actualiza) un artista a partir de un id
- * TODO: put modificando uno, dos, tres o todos los campos posibles en del artista
  */
-//Pasarle como parametro el id de la bbdd
 router.put("/:id", async function (req, res, next) {
     const query = { _id: new ObjectId(req.params.id) };
     const update = {
       $set: {
-        type: req.body.type,
         name: req.body.name,
+        area: req.body.area,
       }
     };
     const dbConnect = dbo.getDb();
@@ -159,6 +155,9 @@ router.put("/:id", async function (req, res, next) {
       .collection('artist')
       .updateOne(query, update);
     const error = validarJSON(req.body, schemaPUTTArtista);
+    if (error) {
+      res.send("Bad request performed by the client due to invalid parameters").status(400);
+    }
     if (!result) {
       res.send("Not found").status(404);
     } else {
@@ -170,7 +169,6 @@ router.put("/:id", async function (req, res, next) {
 /**
  * Delete /artist/{id}
  * Conexión a MongoDB que borra un artista a partir de un id
- * TODO: delete
  */
 router.delete('/:id', async function (req, res, next) {
   const artistId = req.params.id;
@@ -202,7 +200,6 @@ router.delete('/:id', async function (req, res, next) {
 /**
  * Get /artist/{id}/release
  * Conexión a MongoDB que devuelve los álbumes de un artista concreto
- * TODO: get
  */
 router.get('/:id/release', async (req, res) => {
   let query = {}
@@ -254,7 +251,6 @@ router.get('/:id/release', async (req, res) => {
 /**
  * Post /artist/{id}/release
  * Conexión a MongoDB que crea un nuevo álbum para un artista
- * TODO: post
  */
 router.post('/:id/release', async (req, res, next) => {
   try {
@@ -294,9 +290,7 @@ router.post('/:id/release', async (req, res, next) => {
 /**
  * Get /artist/{id}/release/{id}
  * Conexión a MongoDB que devuelve el álbum de un artista
- * TODO: get
  */
-//646d083ddc30ca567f175175
 router.get("/:id/release/:idRelease", async function (req, res, next) {
   const dbConnect = dbo.getDb();
   let query = {_id: new ObjectId(req.params.idRelease)};
@@ -313,17 +307,14 @@ router.get("/:id/release/:idRelease", async function (req, res, next) {
 /**
  * Put /artist/{id}/release/{id}
  * Conexión a MongoDB que modifica(actualiza) el álbum de un artista
- * TODO: put modificando uno, dos, tres o todos los campos posibles del álbum
  */
 
 router.put("/:id/release/:idRelease", async function (req, res, next) {
-  const query = { _id: new ObjectId(req.params.id) };
+  const query = { _id: new ObjectId(req.params.idRelease) };
   const update = {
     $set: {
       title: req.body.title,
-      date: req.body.date,
-      country: req.body.country,
-      language: req.body.language
+      country: req.body.country
     }
   };
   const dbConnect = dbo.getDb();
@@ -346,16 +337,14 @@ const schemaPUTRelease = {
     "country": { "type": "string" },
     "language": { "type": "string" }
   },
-  "required": ["title", "date", "country", "language"]
+  "required": ["title", "country"]
 }
 
 
 /**
  * Delete /artist/{id}/release/{id}
  * Conexión a MongoDB que borra un álbum de un artista
- * TODO: delete
  */
-//646d083ddc30ca567f175175
 router.delete("/:id/release/:idRelease", async function (req, res, next) {
   const query = { _id: new ObjectId(req.params.idRelease) };
   const dbConnect = dbo.getDb();

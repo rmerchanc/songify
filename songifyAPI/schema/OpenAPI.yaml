@@ -41,6 +41,12 @@ paths:
             application/json:
               schema: 
                 $ref: "#/components/schemas/artists"
+        '404':
+          description: There is no artist with that gender
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/error"
         '500':
           description: The server encountered an unexpected condition that prevented it from fulfilling the request
           content: 
