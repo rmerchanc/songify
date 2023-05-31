@@ -11,6 +11,8 @@ const url = "localhost:" + process.env.PORT + process.env.BASE_URI
 const Ajv = require('ajv');
 const ajv = new Ajv();
 
+const fs = require('fs');
+
 /**
  * Get /artist
  * Conexión a MongoDB que devuelve todos los artistas
@@ -55,19 +57,6 @@ router.get('/', async (req, res) => {
 });
 
 
-const schemaPOSTArtista = {
-  "type": "object",
-  "properties": {
-    "id": { "type": "string"},
-    "type": { "type": "string" },
-    "name": { "type": "string" },
-    "gender": { "type": "string" },
-    "area": { "type": "string" },
-    "begin": { "type": "string" },
-    "end": { "type": "string" }
-  },
-  "required": ["id", "type", "name", "gender", "area", "begin"]
-}
 
 function validarJSON(json, schema) {
   const validar = ajv.compile(schema);
@@ -76,29 +65,35 @@ function validarJSON(json, schema) {
   console.log(valido)
 
   if (!valido) {
-    return validar.errors;
+    return false;
   }
 
-  return null;
+  return true;
 }
 
+const jsonPOSTPath = './schema/schemaPOSTTArtista.json';
+const jsonPOSTContent = fs.readFileSync(jsonPOSTPath, 'utf8');
 
 /**
  * Post /artist
  * Conexión a MongoDB que crea un nuevo artista
  */
 router.post('/', async (req, res) => {
+  const sol = validarJSON(req.body, JSON.parse(jsonPOSTContent));
+  console.log(sol)
+  if(sol){
   const dbConnect = dbo.getDb();
   console.log(req.body);
   let result = await dbConnect
     .collection('artist')
     .insertOne(req.body);
-  const error = validarJSON(req.body, schemaPOSTArtista);
-  if (error) {
-    res.send("Bad request performed by the client due to invalid parameters").status(400);
-  } else {
+
     res.status(201).send(result);
+  } else {
+    res.send("Bad request performed by the client due to invalid parameters").status(400);
+
   }
+
 });
 
 /**
@@ -125,17 +120,23 @@ router.get("/:id", async function (req, res, next) {
 
 });
 
-const schemaPUTTArtista = {
-  "type": "object",
-  "properties": {
-    "type": { "type": "string" },
-    "name": { "type": "string" },
-    "gender": { "type": "string" },
-    "area": { "type": "string" },
-    "begin": { "type": "string" },
-    "end": { "type": "string" }
-  },
-  "required": ["name", "area"]
+const jsonPath = './schema/schemaPUTTArtista.json';
+const jsonPUTContent = fs.readFileSync(jsonPath, 'utf8');
+
+async function buacarArtista(id) {
+
+  console.log(id)
+  const dbConnect = dbo.getDb();
+  let query = { _id: new ObjectId(id) };
+  let resultArtista = await dbConnect.collection('artist').findOne(query);
+
+  if (resultArtista) {
+    console.log("artits si exite metodo")
+    return (true);
+  }
+
+  console.log("artits no exite metodo")
+  return (false);
 }
 
 /**
@@ -143,26 +144,31 @@ const schemaPUTTArtista = {
  * Conexión a MongoDB que modifica(actualiza) un artista a partir de un id
  */
 router.put("/:id", async function (req, res, next) {
-    const query = { _id: new ObjectId(req.params.id) };
+  const query = { _id: new ObjectId(req.params.id) };
+
+  const solucion = validarJSON(req.body, JSON.parse(jsonPUTContent));
+  if (solucion) {
     const update = {
       $set: {
-        name: req.body.name,
         area: req.body.area,
+        name: req.body.name
       }
     };
     const dbConnect = dbo.getDb();
     let result = await dbConnect
       .collection('artist')
       .updateOne(query, update);
-    const error = validarJSON(req.body, schemaPUTTArtista);
-    if (error) {
-      res.send("Bad request performed by the client due to invalid parameters").status(400);
-    }
-    if (!result) {
-      res.send("Not found").status(404);
+    //res.status(200).send(result);
+    const sol = await buacarArtista(req.params.id)
+
+    if (!sol) {
+      res.send("Not Found").status(404);
     } else {
-      res.status(200).send(result);
+      res.send("Artista actualizado").status(200);
     }
+  } else {
+    res.send("Bad request performed by the client due to invalid parameters").status(400);
+  }
 });
 
 
@@ -351,7 +357,13 @@ router.delete("/:id/release/:idRelease", async function (req, res, next) {
   let result = await dbConnect
     .collection('release')
     .deleteOne(query);
-  res.status(200).send(result);
+
+    if (result.deletedCount === 0) {
+      res.status(404).send("Not found");
+    } else {
+    res.status(200).send(result);
+    }
+
 });
 
 

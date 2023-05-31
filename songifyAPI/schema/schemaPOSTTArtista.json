@@ -1,0 +1,13 @@
+{
+    "type": "object",
+    "properties": {
+      "id": { "type": "string"},
+      "type": { "type": "string" },
+      "name": { "type": "string" },
+      "gender": { "type": "string" },
+      "area": { "type": "string" },
+      "begin": { "type": "string" },
+      "end": { "type": "string" }
+    },
+    "required": ["type", "name", "gender", "area", "begin"]
+  }
