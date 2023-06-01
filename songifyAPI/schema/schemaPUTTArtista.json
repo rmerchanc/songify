@@ -8,7 +8,6 @@
       "begin": { "type": "string" },
       "end": { "type": "string" }
     },
-    "additionalProperties": false,
-    "required": ["area", "name"]
+    "additionalProperties": false
   }
   
