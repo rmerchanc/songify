@@ -10,6 +10,7 @@ const MAX_RESULTS = parseInt(process.env.MAX_RESULTS);
 const url = "localhost:" + process.env.PORT + process.env.BASE_URI
 const Ajv = require('ajv');
 const ajv = new Ajv();
+const { XMLParser, XMLBuilder, XMLValidator } = require('fast-xml-parser');
 
 const fs = require('fs');
 
@@ -242,8 +243,11 @@ router.get('/:id/release', async (req, res) => {
       next = results.length == limit ? results[results.length - 1]._id : null;
       // Convertirlo a XML
       results_xml = convertXML(results, next.toString())
-      res.set('Content-Type', 'application/xml');
-      res.status(200).send(results_xml);
+      // Validar el XML
+      if (validateXML(results_xml)){
+        res.set('Content-Type', 'application/xml');
+        res.status(200).send(results_xml);
+      }
     }
     catch(error){
       res.status(500).send("The server encountered an unexpected condition that prevented it from fulfilling the request");
@@ -553,6 +557,26 @@ function convertXML(results, next){
   // Convert XML to string
   let xmlString = xml.end({ pretty: true });
   return xmlString
+}
+
+// Validate an XML according to an XSD
+function validateXML(xml_to_validate){
+  // Read the XSD schema file
+  const xsdPath = './schema/release.xsd';
+  const xsdContent = fs.readFileSync(xsdPath, 'utf8');
+  // Validator options
+  const options = {
+    attributeNamePrefix: '',
+    ignoreNameSpace: true,
+    allowBooleanAttributes: true,
+    parseNodeValue: true,
+    parseAttributeValue: true,
+    validate: true, // Enable validation
+    xsd: xsdPath // Provide the XSD schema
+  };
+  // Create the validator
+  const parser = new XMLParser(options);
+  return parser.parse(xml_to_validate);
 }
 
 module.exports = router;
