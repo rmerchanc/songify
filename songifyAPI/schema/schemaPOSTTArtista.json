@@ -9,5 +9,6 @@
       "begin": { "type": "string" },
       "end": { "type": "string" }
     },
+    "additionalProperties": false,
     "required": ["type", "name", "gender", "area", "begin"]
   }

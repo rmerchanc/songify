@@ -1,0 +1,11 @@
+{
+    "type": "object",
+    "properties": {
+      "id": { "type": "string"},
+      "title": { "type": "string" },
+      "date": { "type": "string" },
+      "country": { "type": "string" },
+      "language": { "type": "string" }
+    },
+    "required": ["id", "title", "date", "country", "language"]
+  }
