@@ -18,6 +18,10 @@ const artistPOSTPath = './schema/schemaArtistaPOST.json';
 const artistPOSTContent = fs.readFileSync(artistPOSTPath, 'utf8');
 const artistPUTPath = './schema/schemaArtistaPUT.json';
 const artistPUTContent = fs.readFileSync(artistPUTPath, 'utf8');
+const releasePOSTPath = './schema/schemaReleasePOST.json';
+const releasePOSTContent = fs.readFileSync(releasePOSTPath, 'utf8');
+const releasePUTPath = './schema/schemaReleasePUT.json';
+const releasePUTContent = fs.readFileSync(releasePUTPath, 'utf8');
 
 
 /**
@@ -155,19 +159,6 @@ router.delete('/:id', async function (req, res, next) {
     res.status(404).json({ error: '404 - Artist not found' });
   }
 });
-/*
-router.delete("/:id", async function (req, res, next) {
-  const query = { _id: new ObjectId(req.params.idRelease) };
-  const dbConnect = dbo.getDb();
-  let result = await dbConnect
-    .collection('artist')
-    .deleteOne(query);
-  if (result.deletedCount === 0) {
-    res.status(404).send("404 - Not found");
-  } else {
-  res.status(200).send(result);
-  }
-});*/
 
 
 /**
@@ -200,41 +191,32 @@ router.get('/:id/release', async (req, res) => {
     }
     
     // Recuperar los álbumes
-    try {
-      let results = await dbConnect
-        .collection('release')
-        .find(query)
-        .limit(limit)
-        .toArray()
-      next = results.length == limit ? results[results.length - 1]._id : null;
-      // Convertirlo a XML
-      results_xml = convertXML(results, next.toString())
-      // Validar el XML
-      if (validateXML(results_xml)){
-        res.set('Content-Type', 'application/xml');
-        res.status(200).send(results_xml);
-      }
-    }
-    catch(error){
-      res.status(500).send("The server encountered an unexpected condition that prevented it from fulfilling the request");
+    let results = await dbConnect
+      .collection('release')
+      .find(query)
+      .limit(limit)
+      .toArray()
+    next = results.length == limit ? results[results.length - 1]._id : null;
+    // Convertirlo a XML
+    results_xml = convertXML(results, next.toString())
+    // Validar el XML
+    if (validateXML(results_xml)){
+      res.set('Content-Type', 'application/xml');
+      res.status(200).send(results_xml);
     }
   }catch(error){
-    res.status(404).send("The specified resource was not found");
+    res.status(404).send("404 - The specified resource was not found");
   }
 });
 
 
-const jsonPOSTReleasePath = './schema/schemaReleasePOST.json';
-const jsonPOSTRelease = fs.readFileSync(jsonPOSTReleasePath, 'utf8');
-
-const schema = JSON.parse(jsonPOSTRelease);
 /**
  * Post /artist/{id}/release
- * Conexión a MongoDB que crea un nuevo álbum para un artista
+ * Conexión a MongoDB que crea un nuevo álbum para un artista que existe
  */
 router.post('/:id/release', async (req, res) => {
   const releaseData = req.body;
-
+  const schema = JSON.parse(releasePOSTContent);
   // Call the validarJSON function with the schema
   const isValid = validarJSON(releaseData, schema);
 
@@ -274,7 +256,6 @@ router.post('/:id/release', async (req, res) => {
 });
 
 
-
 /**
  * Get /artist/{id}/release/{id}
  * Conexión a MongoDB que devuelve el álbum de un artista
@@ -292,41 +273,36 @@ router.get("/:id/release/:idRelease", async function (req, res, next) {
   }
 });
 
+
 /**
  * Put /artist/{id}/release/{id}
  * Conexión a MongoDB que modifica(actualiza) el álbum de un artista
  */
-
 router.put("/:id/release/:idRelease", async function (req, res, next) {
   const query = { _id: new ObjectId(req.params.idRelease) };
-  const update = {
-    $set: {
-      title: req.body.title,
-      country: req.body.country
+  updateObject = generateUpdateObject(req.body);
+  const valido = validarJSON(updateObject, JSON.parse(releasePUTContent));
+  if (valido) {
+    const update = {
+      $set: updateObject
+    };
+
+    const hayArtista = await buscarArtista(req.params.id);
+    const hayRelease = await buscarRelease(req.params.idRelease);
+
+    if (!hayArtista || !hayRelease) {
+      res.send("404 - Not Found").status(404);
+    } else {
+      const dbConnect = dbo.getDb();
+      let result = await dbConnect
+        .collection('release')
+        .updateOne(query, update);
+      res.send(result).status(200);
     }
-  };
-  const dbConnect = dbo.getDb();
-  let result = await dbConnect
-    .collection('release')
-    .updateOne(query, update);
-  const error = validarJSON(req.body, schemaPUTRelease);
-  if (!result) {
-    res.send("Not found").status(404);
   } else {
-    res.status(200).send(result);
+    res.send("400 - Bad request performed by the client due to invalid parameters").status(400);
   }
 });
-
-const schemaPUTRelease = {
-  "type": "object",
-  "properties": {
-    "title": { "type": "string" },
-    "date": { "type": "string" },
-    "country": { "type": "string" },
-    "language": { "type": "string" }
-  },
-  "required": ["title", "country"]
-}
 
 
 /**
@@ -579,6 +555,18 @@ async function buscarArtista(id) {
   }
   return (false);
 }
+
+async function buscarRelease(id) {
+  console.log(id)
+  const dbConnect = dbo.getDb();
+  let query = { _id: new ObjectId(id) };
+  let resultRelease = await dbConnect.collection('release').findOne(query);
+  if (resultRelease) {
+    return (true);
+  }
+  return (false);
+}
+
 
 function generateUpdateObject(body){
   let objectUpdate = {};

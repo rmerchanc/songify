@@ -35,3 +35,20 @@ DELETE ARTIST{ID}
 artist/6475e6416dbac3e0ab676d49 -Bruce Sprinsting
 get artist/6475e6416dbac3e0ab676d49 para ver que no existe ahora
 vuelvo a hacer lo mismo para ver q no lo puedo borrar
+
+GET ARTIST/{ID}/RELEASE
+artist/6475e6416dbac3e0ab676d4d/release
+next: artist/6475e6416dbac3e0ab676d4d/release?next=6475e6566dbac3e0ab6776bb
+
+POST ARTIST/{ID}/RELEASE
+artist/6475e6416dbac3e0ab676d5f/release
+{"id": "2", "title": "álbum de ejemplo", "date": "2019-07-06", "country": "ARG", "language": "esp"}
+
+GET ARTIST/{ID}/RELEASE{ID}
+y se comprueba el que se acaba de crear: GET artist/6475e6416dbac3e0ab676d5f/release/<647923b13357288d3ead28a7> <-- el que te devuelva en su momento
+
+PUT ARTIST/{ID}/RELEASE/{ID}
+artist/6475e6416dbac3e0ab676d4d/release/6475e6566dbac3e0ab6776a8
+{"country": "ARG", "language": "esp"}
+para comprobar que lo ha modificado: GET artist/6475e6416dbac3e0ab676d4d/release/6475e6566dbac3e0ab6776a8
+

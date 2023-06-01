@@ -1,0 +1,10 @@
+{
+    "type": "object",
+    "properties": {
+      "title": { "type": "string" },
+      "date": { "type": "string" },
+      "country": { "type": "string" },
+      "language": { "type": "string" }
+    },
+    "additionalProperties": false
+  }
