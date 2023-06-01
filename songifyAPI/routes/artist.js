@@ -65,6 +65,7 @@ function validarJSON(json, schema) {
   console.log(valido)
 
   if (!valido) {
+    console.log(validar.errors);
     return false;
   }
 
@@ -254,19 +255,30 @@ router.get('/:id/release', async (req, res) => {
 });
 
 
+const jsonPOSTReleasePath = './schema/schemaPOSTRelease.json';
+const jsonPOSTRelease = fs.readFileSync(jsonPOSTReleasePath, 'utf8');
+
+const schema = JSON.parse(jsonPOSTRelease);
 /**
  * Post /artist/{id}/release
  * Conexión a MongoDB que crea un nuevo álbum para un artista
  */
-router.post('/:id/release', async (req, res, next) => {
+router.post('/:id/release', async (req, res) => {
+  const releaseData = req.body;
+
+  // Call the validarJSON function with the schema
+  const isValid = validarJSON(releaseData, schema);
+
+  if (!isValid) {
+    return res.status(400).json({ error: 'Invalid release data' });
+  }
+
+  const artistId = req.params.id;
+  const dbConnect = dbo.getDb();
+
   try {
-    const artistId = req.params.id;
-    const releaseData = req.body; 
-
-    const db = dbo.getDb();
-
     // Check if the artist exists
-    const artist = await db.collection('artist').findOne({ _id: new ObjectId(artistId) });
+    const artist = await dbConnect.collection('artist').findOne({ _id: new ObjectId(artistId) });
 
     if (!artist) {
       return res.status(404).json({ error: 'Artist not found' });
@@ -283,14 +295,15 @@ router.post('/:id/release', async (req, res, next) => {
     };
 
     // Insert the release into the database
-    const result = await db.collection('release').insertOne(release);
+    const result = await dbConnect.collection('release').insertOne(release);
 
     res.status(201).json({ message: 'Release created successfully', releaseId: result.insertedId });
   } catch (error) {
-    console.log(error)
+    console.log(error);
     res.status(500).json({ error: 'An error occurred while creating the release' });
   }
 });
+
 
 
 /**
