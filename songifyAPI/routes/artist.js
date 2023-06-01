@@ -259,6 +259,7 @@ router.post('/:id/release', async (req, res) => {
 /**
  * Get /artist/{id}/release/{id}
  * Conexión a MongoDB que devuelve el álbum de un artista
+ * Formato en XML
  */
 router.get("/:id/release/:idRelease", async function (req, res, next) {
   const dbConnect = dbo.getDb();
@@ -316,12 +317,11 @@ router.delete("/:id/release/:idRelease", async function (req, res, next) {
     .collection('release')
     .deleteOne(query);
   if (result.deletedCount === 0) {
-    res.status(404).send("Not found");
+    res.status(404).send("404 - Not found");
   } else {
   res.status(200).send(result);
   }
 });
-
 
 
 /**

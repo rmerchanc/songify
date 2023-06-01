@@ -52,3 +52,6 @@ artist/6475e6416dbac3e0ab676d4d/release/6475e6566dbac3e0ab6776a8
 {"country": "ARG", "language": "esp"}
 para comprobar que lo ha modificado: GET artist/6475e6416dbac3e0ab676d4d/release/6475e6566dbac3e0ab6776a8
 
+DELETE ARTIST/{ID}/RELEASE/{ID}
+artist/6475e6416dbac3e0ab676d4d/release/6475e6566dbac3e0ab6776a9
+hacer un get para comprobar que no lo encuentra
