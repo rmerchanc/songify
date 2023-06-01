@@ -379,13 +379,11 @@ router.get("/:id/recording/:id1", async function (req, res, next) {
     });
 });
 
+
 /**
  * Get /artist/{id}/release/{id}/recording
  * Conexión a la API que devuelve la lista de canciones de un álbum de un artista
  * Formato XML
- * Ejemplo de idRelease:8e302fa1-4e1a-4f71-8324-4cee43fbd45a
- * URL ejemplo de la API: https://musicbrainz.org/ws/2/release/8e302fa1-4e1a-4f71-8324-4cee43fbd45a?inc=recordings
- * Ejemplo en Postman: localhost:3000/artist/234567890098765432/release/8e302fa1-4e1a-4f71-8324-4cee43fbd45a/recordings
  */
 router.get("/:id/release/:idRelease/recordings", async function (req, res, next) {
 

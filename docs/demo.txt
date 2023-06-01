@@ -55,3 +55,15 @@ para comprobar que lo ha modificado: GET artist/6475e6416dbac3e0ab676d4d/release
 DELETE ARTIST/{ID}/RELEASE/{ID}
 artist/6475e6416dbac3e0ab676d4d/release/6475e6566dbac3e0ab6776a9
 hacer un get para comprobar que no lo encuentra
+
+GET ARTIST{ID}/RECORDING
+artist/cc197bad-dc9c-440d-a5b5-d52ba2e14234/recordings  -- es coldplay
+
+GET ARTIST/{ID/RECORDING/{ID}}
+artist/cc197bad-dc9c-440d-a5b5-d52ba2e14234/recording/307ce9da-5690-4e21-ab71-9d12ea106e52  - encuentra Viva la vida de Coldplay
+
+GET /ARTIST/{ID}/RELEASE/{ID}/RECORDING
+artist/cc197bad-dc9c-440d-a5b5-d52ba2e14234/release/8e302fa1-4e1a-4f71-8324-4cee43fbd45a/recordings
+
+GET /ARTIST/{ID}/RELEASE/{ID}/RECORDING{ID}
+artist/cc197bad-dc9c-440d-a5b5-d52ba2e14234/release/8e302fa1-4e1a-4f71-8324-4cee43fbd45a/recordings/822224c8-b19d-4352-a0b8-64571c6651ba
