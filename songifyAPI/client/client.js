@@ -55,8 +55,17 @@ fetch('http://localhost:3000/api/v1/artist', {
   
       try {
         const response = await fetch(url, requestOptions);
-        const data = await response.json();
-        console.log('Response:', data);
+        const contentType = response.headers.get('content-type');
+  
+        if (contentType.includes('application/json')) {
+          const jsonData = await response.json();
+          console.log('Response (JSON):', jsonData);
+        } else if (contentType.includes('application/xml')) {
+          const xmlData = await response.text();
+          console.log('Response (XML):', xmlData);
+        } else {
+          console.log('Unsupported content type:', contentType);
+        }
       } catch (error) {
         console.error('Error:', error);
       }
