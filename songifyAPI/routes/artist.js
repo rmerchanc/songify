@@ -12,7 +12,13 @@ const Ajv = require('ajv');
 const ajv = new Ajv();
 const { XMLParser, XMLBuilder, XMLValidator } = require('fast-xml-parser');
 
+
 const fs = require('fs');
+const artistPOSTPath = './schema/schemaArtistaPOST.json';
+const artistPOSTContent = fs.readFileSync(artistPOSTPath, 'utf8');
+const artistPUTPath = './schema/schemaArtistaPUT.json';
+const artistPUTContent = fs.readFileSync(artistPUTPath, 'utf8');
+
 
 /**
  * Get /artist
@@ -26,7 +32,6 @@ router.get('/', async (req, res) => {
   }
   let next = req.query.next;
   let query = {}
-
   if (next !== undefined && param !== undefined){
     if ((next.length>1) && (param.length>1)){
       query = {$and:[{_id: { $gt: new ObjectId(next) }}, {"gender": param} ]}
@@ -43,14 +48,13 @@ router.get('/', async (req, res) => {
     .collection('artist')
     .find(query)
     .limit(limit)
-    .toArray()
-    .catch(err => res.status(500).send('Error to fetch artists'));
+    .toArray();
   next = results.length == limit ? results[results.length - 1]._id : null;
   results.forEach((result) =>{
       result.url_release = url + `/artist/${result._id}/release`;  
   });
   if (!results || results.length == 0){
-    res.send("Not Found").status(404);
+    res.send("404 - Not Found").status(404);
   }
   else{
     res.json({ results, next }).status(200);
@@ -58,88 +62,44 @@ router.get('/', async (req, res) => {
 });
 
 
-
-function validarJSON(json, schema) {
-  const validar = ajv.compile(schema);
-  console.log(validar)
-  const valido = validar(json);
-  console.log(valido)
-
-  if (!valido) {
-    console.log(validar.errors);
-    return false;
-  }
-
-  return true;
-}
-
-const jsonPOSTPath = './schema/schemaPOSTTArtista.json';
-const jsonPOSTContent = fs.readFileSync(jsonPOSTPath, 'utf8');
-
 /**
  * Post /artist
  * Conexión a MongoDB que crea un nuevo artista
  */
 router.post('/', async (req, res) => {
-  const sol = validarJSON(req.body, JSON.parse(jsonPOSTContent));
+  const sol = validarJSON(req.body, JSON.parse(artistPOSTContent));
   console.log(sol)
   if(sol){
-  const dbConnect = dbo.getDb();
-  console.log(req.body);
-  let result = await dbConnect
-    .collection('artist')
-    .insertOne(req.body);
-
+    const dbConnect = dbo.getDb();
+    console.log(req.body);
+    let result = await dbConnect
+      .collection('artist')
+      .insertOne(req.body);
     res.status(201).send(result);
   } else {
-    res.send("Bad request performed by the client due to invalid parameters").status(400);
-
+    res.send("400 - Bad request performed by the client due to invalid parameters").status(400);
   }
-
 });
+
 
 /**
  * Get /artist/{id}
  * Conexión a MongoDB que devuelve un artista a partir de un id
  */
 router.get("/:id", async function (req, res, next) {
-  try{
   const dbConnect = dbo.getDb();
   let query = {_id: new ObjectId(req.params.id)};
   let result = await dbConnect
     .collection('artist')
-    .findOne(query)
-  result.url_release = url + `/artist/${result._id}/release`;    
-    if (!result){
-      res.send("Not found").status(404);
-    } else {
-      res.status(200).send(result);
-    }
+    .findOne(query)   
+  if (!result){
+    res.send("404 - Not found").status(404);
+  } else {
+    result.url_release = url + `/artist/${result._id}/release`;
+    res.status(200).send(result);
   }
-  catch (error){
-    res.status(500).send('Error to fetch artist')
-  }
-
 });
 
-const jsonPath = './schema/schemaPUTTArtista.json';
-const jsonPUTContent = fs.readFileSync(jsonPath, 'utf8');
-
-async function buacarArtista(id) {
-
-  console.log(id)
-  const dbConnect = dbo.getDb();
-  let query = { _id: new ObjectId(id) };
-  let resultArtista = await dbConnect.collection('artist').findOne(query);
-
-  if (resultArtista) {
-    console.log("artits si exite metodo")
-    return (true);
-  }
-
-  console.log("artits no exite metodo")
-  return (false);
-}
 
 /**
  * Put /artist/{id}
@@ -148,7 +108,7 @@ async function buacarArtista(id) {
 router.put("/:id", async function (req, res, next) {
   const query = { _id: new ObjectId(req.params.id) };
 
-  const solucion = validarJSON(req.body, JSON.parse(jsonPUTContent));
+  const solucion = validarJSON(req.body, JSON.parse(artistPUTContent));
   if (solucion) {
     const update = {
       $set: {
@@ -161,7 +121,7 @@ router.put("/:id", async function (req, res, next) {
       .collection('artist')
       .updateOne(query, update);
     //res.status(200).send(result);
-    const sol = await buacarArtista(req.params.id)
+    const sol = await buscarArtista(req.params.id)
 
     if (!sol) {
       res.send("Not Found").status(404);
@@ -259,7 +219,7 @@ router.get('/:id/release', async (req, res) => {
 });
 
 
-const jsonPOSTReleasePath = './schema/schemaPOSTRelease.json';
+const jsonPOSTReleasePath = './schema/schemaReleasePOST.json';
 const jsonPOSTRelease = fs.readFileSync(jsonPOSTReleasePath, 'utf8');
 
 const schema = JSON.parse(jsonPOSTRelease);
@@ -590,6 +550,31 @@ function validateXML(xml_to_validate){
   // Create the validator
   const parser = new XMLParser(options);
   return parser.parse(xml_to_validate);
+}
+
+function validarJSON(json, schema) {
+  const validar = ajv.compile(schema);
+  console.log(validar)
+  const valido = validar(json);
+  console.log(valido)
+
+  if (!valido) {
+    console.log(validar.errors);
+    return false;
+  }
+
+  return true;
+}
+
+async function buscarArtista(id) {
+  console.log(id)
+  const dbConnect = dbo.getDb();
+  let query = { _id: new ObjectId(id) };
+  let resultArtista = await dbConnect.collection('artist').findOne(query);
+  if (resultArtista) {
+    return (true);
+  }
+  return (false);
 }
 
 module.exports = router;

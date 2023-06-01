@@ -2,3 +2,20 @@ GET ARTIST
 artist
 
 GET ARTIST FILTRO
+    limit 5: artist?limit=5
+    next: artist?next=6475e6416dbac3e0ab676d4c&limit=5
+    gender: artist?gender=female
+    el mix: artist?gender=female&next=6475e6416dbac3e0ab676dde&limit=2
+
+POST ARTIST
+artist
+{"id": "1", "type": "Person", "name": "Bzrp", "gender": "male", "area": "Argentina", "begin": "1998-08-29"}
+copiar id:
+Error: {"id": "1", "type": "Person", "name": "Bzrp", "gender": "male", "area": "Argentina"}
+
+GET ARTIST/{ID}
+artist/6475e6416dbac3e0ab676d4b
+probamos el post de Biza
+probamos el error 404:
+en mongosh: db.artist.find().sort({_id: -1}).limit(1)
+artist/647910e1a999ac2c71a9ad8c
