@@ -107,29 +107,25 @@ router.get("/:id", async function (req, res, next) {
  */
 router.put("/:id", async function (req, res, next) {
   const query = { _id: new ObjectId(req.params.id) };
-
-  const solucion = validarJSON(req.body, JSON.parse(artistPUTContent));
-  if (solucion) {
+  updateObject = generateUpdateObject(req.body);
+  const valido = validarJSON(updateObject, JSON.parse(artistPUTContent));
+  if (valido) {
     const update = {
-      $set: {
-        area: req.body.area,
-        name: req.body.name
-      }
+      $set: updateObject
     };
     const dbConnect = dbo.getDb();
     let result = await dbConnect
       .collection('artist')
       .updateOne(query, update);
-    //res.status(200).send(result);
     const sol = await buscarArtista(req.params.id)
 
     if (!sol) {
-      res.send("Not Found").status(404);
+      res.send("404 - Not Found").status(404);
     } else {
-      res.send("Artista actualizado").status(200);
+      res.send(result).status(200);
     }
   } else {
-    res.send("Bad request performed by the client due to invalid parameters").status(400);
+    res.send("400 - Bad request performed by the client due to invalid parameters").status(400);
   }
 });
 
@@ -141,28 +137,37 @@ router.put("/:id", async function (req, res, next) {
 router.delete('/:id', async function (req, res, next) {
   const artistId = req.params.id;
   const db = dbo.getDb();
+  // Get the artist's id
+  const artist = await db.collection('artist').findOne({ _id: new ObjectId(artistId) });
+  let artistApiId;
+  if(artist){
+    artistApiId = artist.id;
+  }
 
-  try {
-    // Get the artist's id
-    const artist = await db.collection('artist').findOne({ _id: new ObjectId(artistId) });
-    const artistApiId = artist.id;
+  // Delete artist
+  const artistResult = await db.collection('artist').deleteOne({ _id: new ObjectId(artistId) });
 
-    // Delete artist
-    const artistResult = await db.collection('artist').deleteOne({ _id: new ObjectId(artistId) });
-
-    if (artistResult.deletedCount > 0) {
-      // Delete associated releases
-      const releasesResult = await db.collection('release').deleteMany({ id_artist: artistApiId });
-
-      res.status(200).json({ message: 'Artist and associated releases deleted successfully', deletedCount: artistResult.deletedCount, deletedCountReleases: releasesResult.deletedCount });
-    } else {
-      res.status(404).json({ error: 'Artist not found' });
-    }
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'An error occurred while deleting the artist and associated releases' });
+  if (artistResult.deletedCount > 0) {
+    // Delete associated releases
+    const releasesResult = await db.collection('release').deleteMany({ id_artist: artistApiId });
+    res.status(200).json({ message: 'Artist and associated releases deleted successfully', deletedCount: artistResult.deletedCount, deletedCountReleases: releasesResult.deletedCount });
+  } else {
+    res.status(404).json({ error: '404 - Artist not found' });
   }
 });
+/*
+router.delete("/:id", async function (req, res, next) {
+  const query = { _id: new ObjectId(req.params.idRelease) };
+  const dbConnect = dbo.getDb();
+  let result = await dbConnect
+    .collection('artist')
+    .deleteOne(query);
+  if (result.deletedCount === 0) {
+    res.status(404).send("404 - Not found");
+  } else {
+  res.status(200).send(result);
+  }
+});*/
 
 
 /**
@@ -334,13 +339,11 @@ router.delete("/:id/release/:idRelease", async function (req, res, next) {
   let result = await dbConnect
     .collection('release')
     .deleteOne(query);
-
-    if (result.deletedCount === 0) {
-      res.status(404).send("Not found");
-    } else {
-    res.status(200).send(result);
-    }
-
+  if (result.deletedCount === 0) {
+    res.status(404).send("Not found");
+  } else {
+  res.status(200).send(result);
+  }
 });
 
 
@@ -575,6 +578,15 @@ async function buscarArtista(id) {
     return (true);
   }
   return (false);
+}
+
+function generateUpdateObject(body){
+  let objectUpdate = {};
+  for (property in body){
+    if (property=="_id") next;
+    else if (body[property]) objectUpdate[property] = body[property];
+  }
+  return objectUpdate;
 }
 
 module.exports = router;

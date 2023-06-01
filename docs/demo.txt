@@ -19,3 +19,19 @@ probamos el post de Biza
 probamos el error 404:
 en mongosh: db.artist.find().sort({_id: -1}).limit(1)
 artist/647910e1a999ac2c71a9ad8c
+
+PUT ARTIST/{ID}
+/artist/6475e6416dbac3e0ab676d4b
+get de artist/{id}: artist/6475e6416dbac3e0ab676d4b
+{"gender": "female", "area": "Argentina"}
+error 400:
+/artist/6475e6416dbac3e0ab676d4b
+{"gender": "female", "aea": "Argentina"}
+error 404:
+artist/647910e1a999ac2c71a9ad8c
+{"gender": "female", "area": "Argentina"}
+
+DELETE ARTIST{ID}
+artist/6475e6416dbac3e0ab676d49 -Bruce Sprinsting
+get artist/6475e6416dbac3e0ab676d49 para ver que no existe ahora
+vuelvo a hacer lo mismo para ver q no lo puedo borrar
