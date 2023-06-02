@@ -251,7 +251,6 @@ router.post('/:id/release', async (req, res) => {
     res.status(201).json({ message: 'Release created successfully', releaseId: result.insertedId });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ error: 'An error occurred while creating the release' });
   }
 });
 
