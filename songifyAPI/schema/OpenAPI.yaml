@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Songify - OpenAPI 3.0
   version: 0.0.1
-  description: This is an API that allows you to do CRUD operations on artists, releases and recordings. 
+  description: This is an API that allows you to do CRUD operations on artists and releases, plus sending requests to Music Brainz for recordings. 
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
@@ -32,6 +32,10 @@ paths:
     get: 
       tags: 
         - artist
+      parameters: 
+      - $ref: "#/components/parameters/limit"
+      - $ref: "#/components/parameters/next"
+      - $ref: "#/components/parameters/gender"
       summary: GET all the artists of the API
       description: Retreives all the information of the available artists
       responses: 
@@ -42,17 +46,11 @@ paths:
               schema: 
                 $ref: "#/components/schemas/artists"
         '404':
-          description: There is no artist with that gender
+          description: There are no artists with that gender / next parameter
           content:
-            application/json:
+            text/html:
               schema:
                 $ref: "#/components/schemas/error"
-        '500':
-          description: The server encountered an unexpected condition that prevented it from fulfilling the request
-          content: 
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
     post:
       tags: 
         - artist
@@ -74,13 +72,7 @@ paths:
         '400':
           description: Bad request performed by the client due to invalid parameters
           content: 
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
-        '500':
-          description: The server encountered an unexpected condition that prevented it from fulfilling the request
-          content: 
-            application/json:
+            text/html:
               schema:
                 $ref: '#/components/schemas/error'
   /artist/{id}:
@@ -101,15 +93,9 @@ paths:
         '404':
           description: There is no artist with that identifier
           content:
-            application/json:
+            text/html:
               schema:
                 $ref: "#/components/schemas/error"
-        '500':
-          description: The server encountered an unexpected condition that prevented it from fulfilling the request
-          content: 
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
     put:
       tags: 
         - artist
@@ -131,25 +117,19 @@ paths:
         '400':
           description: Bad request performed by the client due to invalid parameters
           content: 
-            application/json:
+            text/html:
               schema:
                 $ref: '#/components/schemas/error'
         '404':
           description: There is no artist with that identifier
           content:
-            application/json:
+            text/html:
               schema:
                 $ref: "#/components/schemas/error"
-        '500':
-          description: The server encountered an unexpected condition that prevented it from fulfilling the request
-          content: 
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
     delete:
       tags: 
         - artist
-      summary: DELETE one artist of the API
+      summary: DELETE one artist of the API and all their releases
       description: Deletes all the information of the specified artist
       responses: 
         '200': 
@@ -157,42 +137,33 @@ paths:
         '404':
           description: There is no artist with that identifier
           content:
-            application/json:
+            text/html:
               schema:
-                $ref: "#/components/schemas/error"
-        '500':
-          description: The server encountered an unexpected condition that prevented it from fulfilling the request
-          content: 
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'    
+                $ref: "#/components/schemas/error"  
   /artist/{id}/release:
     parameters: 
       - $ref: "#/components/parameters/id"
     get:
       tags: 
         - release
+      parameters: 
+      - $ref: "#/components/parameters/limit"
+      - $ref: "#/components/parameters/next"
       summary: GET all the releases from a specific artist of the API
       description: Retreives all the information of the available releases from an artist
       responses: 
         '200': 
           description: All the information of the releases from the specified artist was successfully retreived
           content:
-            application/json:
+            application/xml:
               schema: 
                 $ref: "#/components/schemas/releases"
         '404':
-          description: There is no artist with that identifier
+          description: There is no artist with that identifier (including next parameter)
           content:
-            application/json:
+            text/html:
               schema:
                 $ref: "#/components/schemas/error" 
-        '500':
-          description: The server encountered an unexpected condition that prevented it from fulfilling the request
-          content: 
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
     post:
       tags: 
         - release
@@ -214,21 +185,15 @@ paths:
         '400':
           description: Bad request performed by the client due to invalid parameters
           content: 
-            application/json:
+            text/html:
               schema:
                 $ref: '#/components/schemas/error'
         '404':
           description: There is no artist with that identifier
           content:
-            application/json:
+            text/html:
               schema:
                 $ref: "#/components/schemas/error"
-        '500':
-          description: The server encountered an unexpected condition that prevented it from fulfilling the request
-          content: 
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
   /artist/{id}/release/{id}:
     parameters: 
       - $ref: "#/components/parameters/id"
@@ -247,15 +212,9 @@ paths:
         '404':
           description: There is no artist / release with that identifier
           content:
-            application/json:
+            text/html:
               schema:
                 $ref: "#/components/schemas/error"
-        '500':
-          description: The server encountered an unexpected condition that prevented it from fulfilling the request
-          content: 
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
     put:
       tags: 
         - release
@@ -277,21 +236,15 @@ paths:
         '400':
           description: Bad request performed by the client due to invalid parameters
           content: 
-            application/json:
+            text/html:
               schema:
                 $ref: '#/components/schemas/error'
         '404':
           description: There is no artist / release with that identifier
           content:
-            application/json:
+            text/html:
               schema:
                 $ref: "#/components/schemas/error"
-        '500':
-          description: The server encountered an unexpected condition that prevented it from fulfilling the request
-          content: 
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
     delete:
       tags: 
         - release
@@ -303,15 +256,9 @@ paths:
         '404':
           description: There is no artist / release with that identifier
           content:
-            application/json:
+            text/html:
               schema:
                 $ref: "#/components/schemas/error"
-        '500':
-          description: The server encountered an unexpected condition that prevented it from fulfilling the request
-          content: 
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
   /artist/{id}/recording:
     parameters: 
       - $ref: "#/components/parameters/id"
@@ -330,15 +277,9 @@ paths:
         '404':
           description: There is no artist with that identifier
           content:
-            application/json:
+            text/html:
               schema:
-                $ref: "#/components/schemas/error"
-        "500":
-          description: The server encountered an unexpected condition that prevented it from fulfilling the request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/error"    
+                $ref: "#/components/schemas/error"  
   /artist/{id}/recording/{id}:
     parameters:
       - $ref: "#/components/parameters/id"
@@ -357,15 +298,9 @@ paths:
         '404':
           description: There is no artist / recording with that identifier
           content:
-            application/json:
+            text/html:
               schema:
                 $ref: "#/components/schemas/error"
-        '500':
-          description: The server encountered an unexpected condition that prevented it from fulfilling the request
-          content: 
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
   /artist/{id}/release/{id}/recording:
     parameters: 
       - $ref: "#/components/parameters/id"
@@ -384,13 +319,7 @@ paths:
         '404':
           description: There is no artist / release with that identifier
           content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/error"
-        "500":
-          description: The server encountered an unexpected condition that prevented it from fulfilling the request
-          content:
-            application/json:
+            text/html:
               schema:
                 $ref: "#/components/schemas/error"
   /artist/{id}/release/{id}/recording/{id}:
@@ -411,15 +340,9 @@ paths:
         '404':
           description: There is no artist / release / recording with that identifier
           content:
-            application/json:
+            text/html:
               schema:
                 $ref: "#/components/schemas/error"
-        '500':
-          description: The server encountered an unexpected condition that prevented it from fulfilling the request
-          content: 
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
 components:
   parameters: 
     id: 
@@ -429,6 +352,27 @@ components:
       required: true
       schema:
         $ref: "#/components/schemas/id"
+    limit: 
+      description: Limit the number of results
+      name: limit
+      in: query
+      required: false
+      schema:
+        $ref: "#/components/schemas/limit"
+    next: 
+      description: ID of the next resource
+      name: next
+      in: query
+      required: false
+      schema:
+        $ref: "#/components/schemas/id"
+    gender: 
+      description: Filter using gender
+      name: gender
+      in: query
+      required: false
+      schema:
+        $ref: "#/components/schemas/gender"
   schemas: 
     id: 
       type: string
@@ -437,51 +381,95 @@ components:
       type: array
       items: 
         $ref: "#/components/schemas/artist"
-      example: [ # Modificar ejemplos: hace fata poner el id del mongo, y también referenciar el id del mongo en 'url_release'
+      example: [
         {
-        "id": "e1d521ea-5b97-4981-987c-ba988b2a87d7",
-        "type": "Person",
-        "name": "Erik Satie",
-        "gender": "male",
-        "area": "France",
-        "begin": "1866-05-17",
-        "end": "1925-07-01",
-        "url_release": "https://localhost/api/v1/artist/1/release"
-        }, 
+            "_id": "6453d4f8e6dba8365cac27c4",
+            "id": "b972f589-fb0e-474e-b64a-803b0364fa75",
+            "type": "Person",
+            "name": "Wolfgang Amadeus Mozart",
+            "gender": "male",
+            "area": "Austria",
+            "begin": "1756-01-27",
+            "end": "1791-12-05",
+            "url_release": "localhost:3000/api/v1/artist/6453d4f8e6dba8365cac27c4/release"
+        },
         {
-        "id": "e928d534-ce5b-436f-9186-598f9e7baa1f",
-        "type": "Person",
-        "name": "Heino",
-        "gender": "male",
-        "area": "Germany",
-        "begin": "1938-12-13"
-        "url_release": "https://localhost/api/v1/artist/2/release"
+            "_id": "6453d4f8e6dba8365cac27c5",
+            "id": "70248960-cb53-4ea4-943a-edb18f7d336f",
+            "type": "Person",
+            "name": "Bruce Springsteen",
+            "gender": "male",
+            "area": "United States",
+            "begin": "1949-09-23",
+            "url_release": "localhost:3000/api/v1/artist/6453d4f8e6dba8365cac27c5/release"
+        },
+        {
+            "_id": "6453d4f8e6dba8365cac27c6",
+            "id": "1f9df192-a621-4f54-8850-2c5373b7eac9",
+            "type": "Person",
+            "name": "Ludwig van Beethoven",
+            "gender": "male",
+            "area": "Germany",
+            "begin": "1770-12-17",
+            "end": "1827-03-26",
+            "url_release": "localhost:3000/api/v1/artist/6453d4f8e6dba8365cac27c6/release"
         }
       ]
     artist_update:
       type: object
       properties: 
-        id: 
-          $ref: "#/components/schemas/id"  
-        name: 
-          type: string
-          description: Official name of the artist, it could be a person or a band
         type: 
           type: string
           enum: ["Person", "Group", "Orchestra", "Choir"]
           description: Type which indicates whether an artist is a person, a group or something else.
+        name: 
+          type: string
+          description: Official name of the artist, it could be a person or a band
         gender: 
           type: string
-          enum: ["Male", "Female", "Neither"]
-          description: Gender states whether a person or character identifies as a male, female or neither. Groups do not have genders. 
+          enum: ["male", "female"]
+          description: Gender states whether a person or character identifies as a male or female. Groups do not have genders. 
         area: 
           type: string
           description: Area with which an artist is identified with. Mostly, it is birth/formation country. 
-        begin_date: 
+        begin: 
           type: string
           format: date
           description: Begin date represents the date of birth or the group formation
-        end_date: 
+        end: 
+          type: string
+          format: date
+          description: End date represents the date of death or the group last dissolution
+      additionalProperties: false
+      example: {
+        "type": "Choir"
+      }
+    artist:
+      type: object
+      properties: 
+        _id: 
+          $ref: "#/components/schemas/id"
+        id: 
+          $ref: "#/components/schemas/id"
+        type: 
+          type: string
+          enum: ["Person", "Group", "Orchestra", "Choir"]
+          description: Type which indicates whether an artist is a person, a group or something else.
+        name: 
+          type: string
+          description: Official name of the artist, it could be a person or a band
+        gender: 
+          type: string
+          enum: ["male", "female"]
+          description: Gender states whether a person or character identifies as a male or female. Groups do not have genders. 
+        area: 
+          type: string
+          description: Area with which an artist is identified with. Mostly, it is birth/formation country. 
+        begin: 
+          type: string
+          format: date
+          description: Begin date represents the date of birth or the group formation
+        end: 
           type: string
           format: date
           description: End date represents the date of death or the group last dissolution
@@ -489,61 +477,64 @@ components:
           type: string
           format: uri
           description: URI to the releases of this artist
-        url_recording: 
-          type: string
-          format: uri
-          description: URI to the recordings of this artist
       additionalProperties: false
+      required: 
+        - _id
+        - id
+        - name
+        - type
+        - gender
+        - area
+        - begin
+        - url_release
       example: {
-        "type": "Choir"
-      }
-    artist:
-      allOf:
-        - required: 
-          - id
-          - name
-          - type
-          - area
-          - begin_date
-          - url_release
-          - url_recording
-        - $ref: "#/components/schemas/artist_update"
-      example: {
-        "id": 1,
-        "name": "Coldplay",
-        "type": "Group",
-        "area": "United Kingdom",
-        "begin_date": "1996-09",
-        "url_release": "https://localhost/api/v3/artist/1/release",
-        "url_recording": "https://localhost/api/v3/artist/1/recording"
+          "_id": "6453d4f8e6dba8365cac27c4",
+          "id": "b972f589-fb0e-474e-b64a-803b0364fa75",
+          "type": "Person",
+          "name": "Wolfgang Amadeus Mozart",
+          "gender": "male",
+          "area": "Austria",
+          "begin": "1756-01-27",
+          "end": "1791-12-05",
+          "url_release": "localhost:3000/api/v1/artist/6453d4f8e6dba8365cac27c4/release"
       }
     releases:
       type: array
       items: 
         $ref: "#/components/schemas/release"
-      example: [ # no tiene url, falta id de mongo
-        {
-        "id": "03082446-54ca-4f5f-a0a8-a19fa918be9b",
-        "title": "Harry Potter ja liekehtivä pikari",
-        "date": "2013",
-        "country": "FI",
-        "language": "fin",
-        "id_artist": "569c0d90-28dd-413b-83e4-aaa7c27e667b"
-        },
-        {
-        "id": "0519cffb-7dd8-4460-8e72-aeb8490184af",
-        "title": "Harry Potter ja salaisuuksien kammio",
-        "date": "2013",
-        "country": "FI",
-        "language": "fin",
-        "id_artist": "569c0d90-28dd-413b-83e4-aaa7c27e667b"
-        }
-      ] 
+      example: 
+        <results>
+          <result>
+              <_id>6474f24bff8ecd2d7c987aa8</_id>
+              <id>023a97e2-e101-433e-9a53-ca61a1fa3a7c</id>
+              <title>Le nozze di Figaro</title>
+              <date>1968</date>
+              <country>DE</country>
+              <language>eng</language>
+              <id_artist>b972f589-fb0e-474e-b64a-803b0364fa75</id_artist>
+          </result>
+          <result>
+              <_id>6474f24bff8ecd2d7c987aa9</_id>
+              <id>03f1288f-0c04-414e-ad70-0e1c8f1af15a</id>
+              <title>Horn Concertos 1-4</title>
+              <date>1954-11</date>
+              <country>GB</country>
+              <language>eng</language>
+              <id_artist>b972f589-fb0e-474e-b64a-803b0364fa75</id_artist>
+          </result>
+          <result>
+              <_id>6474f24bff8ecd2d7c987aaa</_id>
+              <id>04fbb752-162a-483b-b0f8-f7f67912af4e</id>
+              <title>Serenade for Orchestra / Tropical / El rancho grande</title>
+              <date>1945-04</date>
+              <country>US</country>
+              <language>eng</language>
+              <id_artist>b972f589-fb0e-474e-b64a-803b0364fa75</id_artist>
+          </result>
+        </results>
     release_update:
       type: object
       properties: 
-        id: 
-          $ref: "#/components/schemas/id" 
         title: 
           type: string
           description: Official name of the release
@@ -558,90 +549,100 @@ components:
           type: string
           description: Official language of the artist's release
         id_artist:
-          $ref: "#/components/schemas/id_artist"
-        url_recording: 
-          type: string
-          format: uri
-          description: URI to the recordings of this release
+          $ref: "#/components/schemas/id"
+      additionalProperties: false
       example: {
         "date": "2000-08-10"
       }
     release:
-      allOf:
-        - required:
-          - id
-          - title
-          - date
-          - country
-          - language
-          - id_artist
-          - url_recording
-        - $ref: "#/components/schemas/release_update"
+      type: object
+      properties: 
+        _id: 
+          $ref: "#/components/schemas/id"
+        id: 
+          $ref: "#/components/schemas/id"
+        title: 
+          type: string
+          description: Official name of the release
+        date: 
+          type: string
+          format: date
+          description: Official date of the artist's release 
+        country: 
+          type: string
+          description: Country of the artist's release. Mostly, it is birth/formation country. 
+        language: 
+          type: string
+          description: Official language of the artist's release
+        id_artist:
+          $ref: "#/components/schemas/id"
+      required:
+        - _id
+        - id
+        - title
+        - date
+        - country
+        - language
+        - id_artist
       additionalProperties: false
-      example:
-        {
-        "id": "03082446-54ca-4f5f-a0a8-a19fa918be9b",
-        "title": "Harry Potter ja liekehtivä pikari",
-        "date": "2013",
-        "country": "FI",
-        "language": "fin",
-        "id_artist": "569c0d90-28dd-413b-83e4-aaa7c27e667b"
-        }
-  
+      example: {
+        "_id": "6474f24bff8ecd2d7c987aa8",
+        "id": "023a97e2-e101-433e-9a53-ca61a1fa3a7c",
+        "title": "Le nozze di Figaro",
+        "date": "1968",
+        "country": "DE",
+        "language": "eng",
+        "id_artist": "b972f589-fb0e-474e-b64a-803b0364fa75"
+      }
     recordings:
       type: array 
       items:
         $ref: "#/components/schemas/recording"
-      example: [    {
-        "id_recordig": "3b8dd486-cb51-4c9b-9c83-9d6e4f25144a",
-        "title": "'til Kingdom Come",
-        "length": "4:24"
-      },
-      {
-        "id_recordig": "eb4a55da-cfa9-4211-ad14-e1419e1ccb18",
-        "title": "'til Kingdom Come",
-        "length": "5:24"
-      }]             
+      example: [
+        {
+          id_recordig: '88e6a14a-9ff4-4ba2-92be-c80601417a42',
+          title: "'til Kingdom Come",
+          length: '0:0'
+        },
+        {
+          id_recordig: '3b8dd486-cb51-4c9b-9c83-9d6e4f25144a',
+          title: "'til Kingdom Come",
+          length: '4:24'
+        }
+      ]      
     recording:
-      - required:
-        - id
+      required:
+        - id_recording
         - title
         - length
-      example: {
-      "id": "4385f49f-46b4-42c3-a0a0-054f2b426880",
-      "title": "(Chris chat #2)",
-      "length": "2:3"
-      }
-    new_element: # ejemplo mal el id
-      type: object
-      properties:
-        id:
-          $ref: "#/components/schemas/id"
-        url: 
-          description: Link to the new element created
-          type: string
-          format: uri
-      example: {
-        "id": 1,
-        "url": "https://localhost/api/v1/artist/1"
-      }
-    error:
-      type: object
-      properties:
-        error:
-          type: string
-          enum: ["Bad request", "Not Found", "Internal Server Error"]
-        mensaje: 
-          type: string
-          enum: ["Bad request performed by the client due to invalid parameters", 
-                 "The specified resource was not found", 
-                 "The server encountered an unexpected condition that prevented it from fulfilling the request"]
-      required:
-      - error
-      - mensaje
       additionalProperties: false
       example: {
-        "error": "Bad request",
-        "mensaje": "Bad request performed by the client due to invalid parameters"
+        id_recordig: '3b8dd486-cb51-4c9b-9c83-9d6e4f25144a',
+        title: "'til Kingdom Come",
+        length: '4:24'
       }
-    
+    new_element:
+      type: object
+      properties:
+        message: 
+          type: string
+          description:  Successfull message
+        releaseId: 
+          description: ID of the new element created
+          type: string
+      example: {
+        "message": "Release created successfully",
+        "releaseId": "647935f2f60d5a38977955ab"
+      }
+    error:
+      type: string
+      enum: ["Bad request performed by the client due to invalid parameters", 
+              "The specified resource was not found"]
+      example: "Bad request performed by the client due to invalid parameters"
+    limit: 
+      type: integer
+      description: Limit of results
+    gender: 
+      type: string
+      enum: ["male", "female"]
+      description: Gender to filter
