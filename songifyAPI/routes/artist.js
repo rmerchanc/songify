@@ -569,7 +569,7 @@ async function buscarRelease(id) {
 function generateUpdateObject(body){
   let objectUpdate = {};
   for (property in body){
-    if (property=="_id") next;
+    if ((property=="_id") || (property=="id") || (property=="id_artist")) continue;
     else if (body[property]) objectUpdate[property] = body[property];
   }
   return objectUpdate;
