@@ -27,11 +27,11 @@ Sitúese en el directorio raíz del proyecto.
 
 ### Ejecución del servidor
 1. Para arrancar el servidor, sitúese en el directorio songify/songifyAPI/ y ejecute los siguientes comandos: 
-1.1. Instale los paquetes necesarios con: 
+- Instale los paquetes necesarios con: 
 ```
 npm install
 ```
-1.2. Arranque el servidor con el comando: 
+- Arranque el servidor con el comando: 
 ```
 npm start
 ```
